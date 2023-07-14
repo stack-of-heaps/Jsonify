@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Assurity.Api.Contracts" Version="2.0.23111.1" />
+    <PackageReference Include="Assurity.Forms.Populate.Contracts" Version="2.0.23123.2" />
+    <PackageReference Include="Assurity.NBFrameworkRestApi.Contracts" Version="3.0.23124.1" />
+    <PackageReference Include="Assurity.Occupation.Contracts" Version="1.0.22223.1" />
+    <PackageReference Include="Assurity.Questions.Contracts" Version="3.0.23096.1" />
+    <PackageReference Include="Assurity.Quote.Contracts" Version="3.0.23125.1" />
     <PackageReference Include="Assurity.Underwriting.Contracts" Version="6.0.23123.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
