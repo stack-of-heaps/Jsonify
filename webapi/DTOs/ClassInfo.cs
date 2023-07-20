@@ -8,6 +8,8 @@
 
         public string Namespace { get; set; }
 
+        public string Product { get; set; }
+
         public string Version { get; set; }
     }
 }

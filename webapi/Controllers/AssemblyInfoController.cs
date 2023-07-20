@@ -21,17 +21,17 @@ public class AssemblyInfoController : ControllerBase
             { ServiceNames.Underwriting, "Assurity.Underwriting.Contracts" }
         };
 
-    private Dictionary<ProductNames, string[]> ProductNamesSearchTermsLookup => new Dictionary<ProductNames, string[]>
+    private Dictionary<ProductNames, List<string>> ProductNamesSearchTermsLookup => new Dictionary<ProductNames, List<string>>
         {
-            { ProductNames.AccidentGoToMarket, new string[1]{ "GoToMarket" } },
-            { ProductNames.AccidentFlex, new string[1]{"Flex" } },
-            { ProductNames.AccidentalDeath, new string[1]{ "AccidentalDeath" } },
-            { ProductNames.CenturyPlusDisabilityIncome, new string[1]{ "CenturyPlusDisabilityIncome" } },
-            { ProductNames.CriticalIllness, new string[1]{ "CriticalIllness" } },
-            { ProductNames.CriticalIllnessDirect, new string[1]{ "CriticalIllnessDirect" } },
-            { ProductNames.IncomeProtection, new string[1]{ "IncomeProtection" } },
-            { ProductNames.TermLife, new string[1]{ "TermLife" } },
-            { ProductNames.TermLifeLowStrain, new string[1]{ "TermLifeLowStrain" } }
+            { ProductNames.AccidentGoToMarket, new List<string> { "GoToMarket" } },
+            { ProductNames.AccidentFlex, new List <string> { "Flex" } },
+            { ProductNames.AccidentalDeath, new List<string>{ "AccidentalDeath" } },
+            { ProductNames.CenturyPlusDisabilityIncome, new List<string>{ "CenturyPlusDisabilityIncome" } },
+            { ProductNames.CriticalIllness, new List<string>{ "CriticalIllness" } },
+            { ProductNames.CriticalIllnessDirect, new List < string > { "CriticalIllnessDirect" } },
+            { ProductNames.IncomeProtection, new List < string > { "IncomeProtection" } },
+            { ProductNames.TermLife, new List < string > { "TermLife" } },
+            { ProductNames.TermLifeDeveloperEdition, new List<string>{ "TermLifeLowStrain", "TermLifeDeveloperEdition" } }
         };
 
     [EnableCors]
@@ -87,8 +87,6 @@ public class AssemblyInfoController : ControllerBase
         {
             return BadRequest("Invalid type.");
         }
-
-        var properties = type.GetProperties();
 
         return Ok(GetProperties(type));
     }
@@ -162,55 +160,58 @@ public class AssemblyInfoController : ControllerBase
 
         if (!serviceName.HasValue)
         {
-            assemblies = GetAllAssemblies();
+            foreach (var service in Enum.GetValues<ServiceNames>())
+            {
+                assemblies.Add(Assembly.Load(ServiceToNamespaceLookup.GetValueOrDefault(service)));
+            };
         }
         else
         {
             assemblies.Add(Assembly.Load(ServiceToNamespaceLookup.GetValueOrDefault(serviceName.Value)));
         }
 
-        return new GetClassesResponse { Classes = GetClassInfo(assemblies, productName).ToList() };
+        return new GetClassesResponse { Classes = GetClassInfo(assemblies, serviceName, productName).ToList() };
     }
 
-    private List<Assembly> GetAllAssemblies()
-    {
-        var assemblies = new List<Assembly>();
-
-        foreach (var service in Enum.GetValues<ServiceNames>())
-        {
-            assemblies.Add(Assembly.Load(ServiceToNamespaceLookup.GetValueOrDefault(service)));
-        }
-
-        return assemblies;
-    }
-
-    private IEnumerable<ClassInfo> GetClassInfo(List<Assembly> assemblies, ProductNames? productName)
+    private IEnumerable<ClassInfo> GetClassInfo(List<Assembly> assemblies, ServiceNames? serviceName, ProductNames? productName)
     {
         var productSearchFilter = GetProductSearchFilters(productName);
 
         foreach (var assembly in assemblies)
         {
+            var assemblyFilter = GetAssemblyFilter(serviceName);
+
             foreach (var type in assembly.GetTypes())
             {
-                if (!productSearchFilter.Any(filter => type.FullName.Contains(filter, StringComparison.OrdinalIgnoreCase)))
+                if (productSearchFilter.Any() && !productSearchFilter.Any(filter => type.FullName.Contains(filter, StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
                 }
 
+                var fullName = type.FullName;
+                var contractsPosition = fullName.LastIndexOf("Contracts");
+                if (contractsPosition == -1)
+                {
+                    continue;
+                }
+
+                var product = fullName.Substring(contractsPosition).Split('.')[1];
+
                 yield return new ClassInfo
                 {
                     DisplayName = type.Name,
-                    FullName = type.FullName,
-                    Namespace = assembly.FullName.Split(',')[0],
-                    Version = GetVersion(type.FullName)
+                    Product = product,
+                    FullName = fullName,
+                    Namespace = fullName.Split(',')[0],
+                    Version = GetVersion(fullName)
                 };
             }
         }
     }
 
-    private string[] GetProductSearchFilters(ProductNames? productName)
+    private List<string> GetProductSearchFilters(ProductNames? productName)
     {
-        var productSearchFilter = Array.Empty<string>();
+        var productSearchFilter = new List<string>();
 
         if (productName.HasValue)
         {
@@ -222,12 +223,56 @@ public class AssemblyInfoController : ControllerBase
 
     private string GetVersion(string fullClassName)
     {
-        if (fullClassName.Contains("Assurity.Api", StringComparison.OrdinalIgnoreCase)
-            || fullClassName.Contains("v2", StringComparison.OrdinalIgnoreCase))
+        if (fullClassName.Contains("V2") || fullClassName.Contains("Api"))
         {
             return "2";
         }
 
+        if (fullClassName.Contains("V3"))
+        {
+            return fullClassName.Contains("Quote")
+                ? "2"
+                : "3";
+        }
+
         return "1";
+    }
+
+    private List<string> GetAssemblyFilter(ServiceNames? serviceName)
+    {
+        if (!serviceName.HasValue)
+        {
+            return new List<string>();
+        }
+
+        var assemblyFilters = new List<string> { ServiceToNamespaceLookup[serviceName.Value] };
+        switch (serviceName)
+        {
+            case ServiceNames.Api:
+            case ServiceNames.Occupation:
+                break;
+
+            case ServiceNames.Forms:
+                assemblyFilters.Add("Assurity.Forms.V2.Populate.Contracts");
+                break;
+
+            case ServiceNames.NBFrameworkRestAPI:
+                assemblyFilters.Add("Assurity.NBFrameworkRestApi.V2.Contracts");
+                break;
+
+            case ServiceNames.Questions:
+                assemblyFilters.Add("Assurity.Questions.V2.Contracts");
+                break;
+
+            case ServiceNames.Quote:
+                assemblyFilters.Add("Assurity.Quote.V3.Contracts");
+                break;
+
+            case ServiceNames.Underwriting:
+                assemblyFilters.Add("Assurity.Underwriting.V2.Contracts");
+                break;
+        }
+
+        return assemblyFilters;
     }
 }
