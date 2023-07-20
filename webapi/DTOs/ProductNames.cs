@@ -10,6 +10,6 @@
         CriticalIllnessDirect,
         IncomeProtection,
         TermLife,
-        TermLifeLowStrain
+        TermLifeDeveloperEdition
     }
 }
