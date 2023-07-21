@@ -19,6 +19,24 @@
                                :value="product" />
                 </el-select>
             </div>
+            <div>
+                <p>
+                SelectedService
+                {{selectedService}}
+                    </p>
+            </div>
+            <div v-if="classList">
+                <p>Classes Present</p>
+                <div>
+                <el-select v-model="selectedClass" filterable clearable class="m-2" @change="fetchClass" placeholder="Class" size="large">
+                    <el-option v-for="(classVar, index) in classList"
+                               :key="index"
+                               :label="classVar.displayName"
+                               :value="index" />
+                </el-select>
+
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -34,16 +52,15 @@
                 productList: null,
                 serviceList: null,
                 selectedService: null,
-                selectedProduct: null
+                selectedProduct: null,
+                selectedClass: null,
+                classInfo: null
             };
         },
         created() {
-            // fetch the data when the view is created and the data is
-            // already being observed
             this.fetchInitialData();
         },
         watch: {
-            // call again the method if the route changes
             '$route': 'fetchInitialData',
 
         },
@@ -58,16 +75,34 @@
                 this.fetchClasses(selectionValue, this.selectedProduct);
             },
 
+            async fetchClass(classListIndex){
+
+                console.log('classListIndex: ', classListIndex);
+                let thisClass = this.classList[classListIndex];
+                console.log('thisClass', thisClass)
+                let namespace = thisClass.namespace
+                let fullClassName = thisClass.fullName
+                console.log('namespace ', namespace)
+                console.log('fullclassname ', fullClassName)
+                
+                var classesBaseUrl = `https://localhost:7219/assemblyInfo/classes/${fullClassName}/properties?namespace=${namespace}`
+
+                let response = await fetch(classesBaseUrl).then(response => response.json());
+                this.classInfo = response;
+                console.log('this.classInfo ', this.classInfo)
+            },
+
             async fetchClasses(serviceFilter, productFilter) {
-                if (serviceFilter === null && productFilter === null) {
+                if (!serviceFilter && !productFilter) {
+                    this.classList = null;
                     return;
                 }
 
-                if (serviceFilter === null) {
+                if (!serviceFilter) {
                     serviceFilter = this.selectedService;
                 }
 
-                if (productFilter === null) {
+                if (!productFilter) {
 
                     productFilter = this.selectedProduct;
                 }
@@ -90,7 +125,7 @@
                 }
 
                 let getClassesResponse = await fetch(classesBaseUrl).then(response => response.json());
-                this.classList = getClassesResponse;
+                this.classList = getClassesResponse.classes;
 
                 console.log(getClassesResponse);
             },
