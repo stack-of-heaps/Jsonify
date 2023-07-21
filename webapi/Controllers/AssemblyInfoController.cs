@@ -54,7 +54,9 @@ public class AssemblyInfoController : ControllerBase
     {
         if (serviceName == null && productName == null)
         {
-            return BadRequest($"You must provide at least one queryParameter. Both {serviceName} and {productName} cannot be null.");
+            return BadRequest(
+                $"You must provide at least one queryParameter. " +
+                $"Both {nameof(ServiceNames)} and {nameof(ProductNames)} cannot be null.");
         }
 
         return Ok(GetGetClassesResponse(serviceName, productName));
