@@ -27,11 +27,20 @@
     </div>
 </template>
 
-<script lang="js">
+<script lang="ts">
     import { defineComponent } from 'vue';
 
+    type Forecasts = {
+        date: string
+    }[];
+
+    interface Data {
+        loading: boolean,
+        post: null | Forecasts
+    }
+
     export default defineComponent({
-        data() {
+        data(): Data {
             return {
                 loading: false,
                 post: null
@@ -47,14 +56,14 @@
             '$route': 'fetchData'
         },
         methods: {
-            fetchData() {
+            fetchData(): void {
                 this.post = null;
                 this.loading = true;
 
                 fetch('weatherforecast')
                     .then(r => r.json())
                     .then(json => {
-                        this.post = json;
+                        this.post = json as Forecasts;
                         this.loading = false;
                         return;
                     });

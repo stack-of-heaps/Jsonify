@@ -13,13 +13,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 builder.Services.AddCors(options =>
-    {
-        options.AddDefaultPolicy(
-                policy =>
-                {
-                    policy.WithOrigins("https://localhost:5002");
-                });
-    });
+{
+    options.AddDefaultPolicy(
+            policy =>
+            {
+                policy.WithOrigins("https://localhost:5002");
+            });
+});
 
 var app = builder.Build();
 

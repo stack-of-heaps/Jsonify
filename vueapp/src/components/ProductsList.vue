@@ -1,22 +1,15 @@
 <template>
     <div class="post">
         <div v-if="loading" class="loading">
-            Loading products list... 
+            Loading products list...
         </div>
 
-        <div v-if="productList" class="content">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="product in productList">
-                        <td>{{ product }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="post">
+            <div v-if="productList">
+                <b-dropdown>
+                    <b-dropdown-item>One </b-dropdown-item>
+                </b-dropdown>
+            </div>
         </div>
     </div>
 </template>
@@ -28,7 +21,7 @@
         data() {
             return {
                 loading: false,
-                classList: null,
+                productList: null,
                 serviceList: null
             };
         },
@@ -54,11 +47,11 @@
                 ]);
 
                 let results = await allCalls;
-                this.productList = results[0].split(',');
-                this.serviceList = results[1].split(',');
+                this.productList = results[0];
+                this.serviceList = results[1];
                 this.loading = false;
                 return;
             }
-        },
+        }
     });
 </script>
