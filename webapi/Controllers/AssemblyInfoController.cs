@@ -198,13 +198,14 @@ public class AssemblyInfoController : ControllerBase
                 }
 
                 var product = fullName.Substring(contractsPosition).Split('.')[1];
+                var assemblyName = assembly.FullName.Split(',')[0];
 
                 yield return new ClassInfo
                 {
                     DisplayName = type.Name,
                     Product = product,
                     FullName = fullName,
-                    Namespace = fullName.Split(',')[0],
+                    Namespace = assemblyName,
                     Version = GetVersion(fullName)
                 };
             }
