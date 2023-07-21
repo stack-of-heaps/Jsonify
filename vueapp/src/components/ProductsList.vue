@@ -6,9 +6,18 @@
 
         <div class="post">
             <div v-if="productList">
-                <b-dropdown>
-                    <b-dropdown-item>One </b-dropdown-item>
-                </b-dropdown>
+                <el-select v-model="value" class="m-2" placeholder="Service" size="large">
+                    <el-option v-for="service in serviceList"
+                               :key="service"
+                               :label="service"
+                               :value="service" />
+                </el-select>
+                <el-select v-model="value" class="m-2" placeholder="Product" size="large">
+                    <el-option v-for="product in productList"
+                               :key="product"
+                               :label="product"
+                               :value="product" />
+                </el-select>
             </div>
         </div>
     </div>
@@ -42,8 +51,8 @@
                 let assemblyInfoBaseUrl = 'https://localhost:7219/assemblyInfo/';
 
                 let allCalls = Promise.all([
-                    fetch(assemblyInfoBaseUrl + 'products').then(response => response.text()),
-                    fetch(assemblyInfoBaseUrl + 'services').then(response => response.text())
+                    fetch(assemblyInfoBaseUrl + 'products').then(response => response.json()),
+                    fetch(assemblyInfoBaseUrl + 'services').then(response => response.json())
                 ]);
 
                 let results = await allCalls;
