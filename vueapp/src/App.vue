@@ -1,18 +1,150 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <ProductsList />
+  <el-container>
+    <el-aside>
+      <div>
+        <div v-if="productList">
+            <el-select v-model="selectedService" filterable clearable class="m-2" @change="serviceSelection" placeholder="Service" size="large">
+                <el-option v-for="(service, index) in serviceList"
+                            :key="index"
+                            :label="service"
+                            :value="service" />
+            </el-select>
+            <el-select v-model="selectedProduct" filterable clearable class="m-2" @change="productSelection" placeholder="Product" size="large">
+                <el-option v-for="(product, index) in productList"
+                            :key="index"
+                            :label="product"
+                            :value="product" />
+            </el-select>
+        </div>
+        <div v-if="classList">
+            <el-select v-model="selectedClass" filterable class="m-2" @change="getProperties" placeholder="Class" size="large">
+                <el-option v-for="(classVar, index) in classList"
+                            :key="index"
+                            :label="classVar.displayName"
+                            :value="index" />
+            </el-select>
+
+            <div v-if="classProperties">
+                <p>classProperties present</p>
+                <div v-for="(property, index) in classProperties.properties" :key="index">
+                    <p>DisplayName: {{ property.displayName }}</p>
+                    <p>IsCollection: {{ property.isCollection }}</p>
+                    <p>Nullable: {{ property.nullable }}</p>
+                    <p>Type: {{ property.type }}</p>
+                    <p>PropertyType: {{ property.propertyType }}</p>
+                    <ul v-if="property.propertyType === 'Enum'">
+                        Enumerated properties: 
+                        <li v-for="(enumProperty, index) in property.enumeratedProperties" :key="index">{{ enumProperty }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    </el-aside>
+  </el-container>
 </template>
 
 <script lang="ts">
     import { defineComponent } from 'vue';
-    import ProductsList from './components/ProductsList.vue';
+    import { ClassInfo } from '../src/lib/typeDefinitions'
+    import { Property } from '../src/lib/typeDefinitions';
+    import { ProductNames } from '../src/lib/typeDefinitions'
+    import { ServiceNames } from '../src/lib/typeDefinitions'
 
 export default defineComponent({
   name: 'App',
     components: {
-      ProductsList
-  }
-});
+  },
+  data() {
+            return {
+                loading: false,
+                classList: [] as ClassInfo[],
+                productList: [] as string[],
+                serviceList: [] as string[],
+                selectedService: ServiceNames.None,
+                selectedProduct: ProductNames.None,
+                selectedClass: "",
+                classProperties: null as Property | null
+            };
+        },
+        created() {
+            this.fetchInitialData();
+        },
+        watch: {
+            '$route': 'fetchInitialData',
+        },
+
+        methods: {
+            async productSelection(selectionValue: ProductNames): Promise<void> {
+                this.selectedProduct = selectionValue;
+                this.classList = await this.fetchClasses(this.selectedService, selectionValue)
+            },
+
+            async serviceSelection(selectionValue: ServiceNames): Promise<void> {
+                this.selectedService = selectionValue;
+                this.classList = await this.fetchClasses(selectionValue, this.selectedProduct);
+            },
+
+            async getProperties(classListIndex: number): Promise<void> {
+                console.log('value from class dropdown: ', classListIndex)
+
+                let thisClass = this.classList[classListIndex];
+                let namespace = thisClass.namespace
+                let fullClassName = thisClass.fullName
+                let classesBaseUrl = `https://localhost:7219/assemblyInfo/classes/${fullClassName}/properties?namespace=${namespace}`
+
+                let response = await fetch(classesBaseUrl).then(response => response.json());
+
+                console.log("getProperties response: ", response)
+                this.classProperties = response;
+
+                console.log("this.classProperties set to: ", this.classProperties)
+            },
+
+            async fetchClasses(serviceFilter: ServiceNames, productFilter: ProductNames): Promise<ClassInfo[]> {
+                if (!serviceFilter && !productFilter) {
+                    return [];
+                }
+
+                serviceFilter = serviceFilter ?? this.selectedService;
+                productFilter = productFilter ?? this.selectedProduct
+
+                let classesBaseUrl = 'https://localhost:7219/assemblyInfo/classes?';
+                let parameterAdded = false;
+
+                if (serviceFilter != null) {
+                    classesBaseUrl += `serviceName=${serviceFilter}`
+                    parameterAdded = true;
+                }
+
+                classesBaseUrl += parameterAdded ? '&' : '';
+                classesBaseUrl += `productName=${productFilter}`
+
+                let getClassesResponse = await fetch(classesBaseUrl).then(response => response.json());
+                console.log(getClassesResponse);
+
+                return getClassesResponse.classes;
+            },
+
+            async fetchInitialData() {
+                this.loading = true;
+
+                let assemblyInfoBaseUrl = 'https://localhost:7219/assemblyInfo/';
+
+                let allCalls = Promise.all([
+                    fetch(assemblyInfoBaseUrl + 'products').then(response => response.json()),
+                    fetch(assemblyInfoBaseUrl + 'services').then(response => response.json())
+                ]);
+
+                let results = await allCalls;
+                this.productList = results[0];
+                this.serviceList = results[1];
+                this.loading = false;
+
+                return;
+            }
+        }
+    });
 </script>
 
 <style>
