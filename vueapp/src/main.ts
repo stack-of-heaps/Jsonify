@@ -5,5 +5,6 @@ import App from './App.vue'
 
 const app = createApp(App)
 
-app.use(ElementPlus);
+
+app.use(ElementPlus, { size: 'small', zIndex: 3000 })
 app.mount('#app')

@@ -2,15 +2,17 @@
 {
     public class Property
     {
-        // public string Assembly { get; set; }
-
-        // public string FullName { get; set; }
+        public string Assembly { get; set; }
 
         public string DisplayName { get; set; }
+
+        public bool Nullable { get; set; }
 
         public List<Property> Properties { get; set; }
 
         public string Type { get; set; }
+
+        public PropertyTypes PropertyType { get; set; }
 
         public bool IsEnum { get; set; }
 

@@ -1,40 +1,39 @@
 <template>
-    <div class="post">
-        <div v-if="loading" class="loading">
-            Loading products list...
+    <div>
+        <div v-if="productList">
+            <el-select v-model="selectedService" filterable clearable class="m-2" @change="serviceSelection" placeholder="Service" size="large">
+                <el-option v-for="(service, index) in serviceList"
+                            :key="index"
+                            :label="service"
+                            :value="service" />
+            </el-select>
+            <el-select v-model="selectedProduct" filterable clearable class="m-2" @change="productSelection" placeholder="Product" size="large">
+                <el-option v-for="(product, index) in productList"
+                            :key="index"
+                            :label="product"
+                            :value="product" />
+            </el-select>
         </div>
+        <div v-if="classList">
+            <el-select v-model="selectedClass" filterable class="m-2" @change="getProperties" placeholder="Class" size="large">
+                <el-option v-for="(classVar, index) in classList"
+                            :key="index"
+                            :label="classVar.displayName"
+                            :value="index" />
+            </el-select>
 
-        <div class="post">
-            <div v-if="productList">
-                <el-select v-model="selectedService" filterable clearable class="m-2" @change="serviceSelection" placeholder="Service" size="large">
-                    <el-option v-for="(service, index) in serviceList"
-                               :key="index"
-                               :label="service"
-                               :value="service" />
-                </el-select>
-                <el-select v-model="selectedProduct" filterable clearable class="m-2" @change="productSelection" placeholder="Product" size="large">
-                    <el-option v-for="(product, index) in productList"
-                               :key="index"
-                               :label="product"
-                               :value="product" />
-                </el-select>
-            </div>
-            <div>
-                <p>
-                SelectedService
-                {{selectedService}}
-                    </p>
-            </div>
-            <div v-if="classList">
-                <p>Classes Present</p>
-                <div>
-                <el-select v-model="selectedClass" filterable clearable class="m-2" @change="fetchClass" placeholder="Class" size="large">
-                    <el-option v-for="(classVar, index) in classList"
-                               :key="index"
-                               :label="classVar.displayName"
-                               :value="index" />
-                </el-select>
-
+            <div v-if="classProperties">
+                <p>classProperties present</p>
+                <div v-for="(property, index) in classProperties.properties" :key="index">
+                    <p>DisplayName: {{ property.displayName }}</p>
+                    <p>IsCollection: {{ property.isCollection }}</p>
+                    <p>Nullable: {{ property.nullable }}</p>
+                    <p>Type: {{ property.type }}</p>
+                    <p>PropertyType: {{ property.propertyType }}</p>
+                    <ul v-if="property.propertyType === 'Enum'">
+                        Enumerated properties: 
+                        <li v-for="(enumProperty, index) in property.enumeratedProperties" :key="index">{{ enumProperty }}</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -43,8 +42,8 @@
 
 <script lang="ts">
     import { defineComponent } from 'vue';
-    // import {ClassInfo } from '../lib/typeDefinitions';
     import { ClassInfo } from '../lib/typeDefinitions'
+    import { Property } from '../lib/typeDefinitions';
     import { ProductNames } from '../lib/typeDefinitions'
     import { ServiceNames } from '../lib/typeDefinitions'
 
@@ -53,12 +52,12 @@
             return {
                 loading: false,
                 classList: [] as ClassInfo[],
-                productList: null,
-                serviceList: null,
+                productList: [] as string[],
+                serviceList: [] as string[],
                 selectedService: ServiceNames.None,
                 selectedProduct: ProductNames.None,
-                selectedClass: null,
-                classInfo:  null
+                selectedClass: "",
+                classProperties: null as Property | null
             };
         },
         created() {
@@ -66,34 +65,33 @@
         },
         watch: {
             '$route': 'fetchInitialData',
-
         },
+
         methods: {
-            async productSelection(selectionValue: ProductNames ) {
+            async productSelection(selectionValue: ProductNames): Promise<void> {
                 this.selectedProduct = selectionValue;
                 this.classList = await this.fetchClasses(this.selectedService, selectionValue)
             },
 
-            async serviceSelection(selectionValue: ServiceNames) {
+            async serviceSelection(selectionValue: ServiceNames): Promise<void> {
                 this.selectedService = selectionValue;
                 this.classList = await this.fetchClasses(selectionValue, this.selectedProduct);
             },
 
-            async fetchClass(classListIndex: number){
+            async getProperties(classListIndex: number): Promise<void> {
+                console.log('value from class dropdown: ', classListIndex)
 
-                console.log('classListIndex: ', classListIndex);
                 let thisClass = this.classList[classListIndex];
-                console.log('thisClass', thisClass)
                 let namespace = thisClass.namespace
                 let fullClassName = thisClass.fullName
-                console.log('namespace ', namespace)
-                console.log('fullclassname ', fullClassName)
-                
-                var classesBaseUrl = `https://localhost:7219/assemblyInfo/classes/${fullClassName}/properties?namespace=${namespace}`
+                let classesBaseUrl = `https://localhost:7219/assemblyInfo/classes/${fullClassName}/properties?namespace=${namespace}`
 
                 let response = await fetch(classesBaseUrl).then(response => response.json());
-                this.classInfo = response;
-                console.log('this.classInfo ', this.classInfo)
+
+                console.log("getProperties response: ", response)
+                this.classProperties = response;
+
+                console.log("this.classProperties set to: ", this.classProperties)
             },
 
             async fetchClasses(serviceFilter: ServiceNames, productFilter: ProductNames): Promise<ClassInfo[]> {
@@ -101,13 +99,8 @@
                     return [];
                 }
 
-                if (!serviceFilter) {
-                    serviceFilter = this.selectedService;
-                }
-
-                if (!productFilter) {
-                    productFilter = this.selectedProduct;
-                }
+                serviceFilter = serviceFilter ?? this.selectedService;
+                productFilter = productFilter ?? this.selectedProduct
 
                 let classesBaseUrl = 'https://localhost:7219/assemblyInfo/classes?';
                 let parameterAdded = false;
@@ -117,13 +110,8 @@
                     parameterAdded = true;
                 }
 
-                if (productFilter != null) {
-                    if (parameterAdded === true) {
-                        classesBaseUrl += '&'
-                    }
-
-                    classesBaseUrl += `productName=${productFilter}`
-                }
+                classesBaseUrl += parameterAdded ? '&' : '';
+                classesBaseUrl += `productName=${productFilter}`
 
                 let getClassesResponse = await fetch(classesBaseUrl).then(response => response.json());
                 console.log(getClassesResponse);
@@ -132,7 +120,6 @@
             },
 
             async fetchInitialData() {
-                this.productList = null;
                 this.loading = true;
 
                 let assemblyInfoBaseUrl = 'https://localhost:7219/assemblyInfo/';
@@ -146,6 +133,7 @@
                 this.productList = results[0];
                 this.serviceList = results[1];
                 this.loading = false;
+
                 return;
             }
         }

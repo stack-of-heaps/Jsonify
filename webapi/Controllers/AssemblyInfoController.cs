@@ -102,11 +102,13 @@ public class AssemblyInfoController : ControllerBase
 
         var nullablePropertyType = Nullable.GetUnderlyingType(type);
         var propertyType = string.Empty;
+        var isNullable = false;
 
         if (nullablePropertyType != null)
         {
             type = nullablePropertyType;
             propertyType = nullablePropertyType.Name;
+            isNullable = true;
         }
         else
         {
@@ -119,8 +121,10 @@ public class AssemblyInfoController : ControllerBase
             return new Property
             {
                 DisplayName = name,
-                // Assembly = type.Module.Name,
+                Assembly = type.Module.Name,
+                Nullable = isNullable,
                 // FullName = type.FullName,
+                PropertyType = PropertyTypes.Enum,
                 Type = propertyType,
                 IsEnum = true,
                 EnumeratedProperties = enumValues
@@ -132,8 +136,11 @@ public class AssemblyInfoController : ControllerBase
             var item = type.GetProperties().First(prop => prop.Name == "Item").PropertyType;
             return new Property
             {
+                Assembly = type.Module.Name,
                 DisplayName = name,
                 IsCollection = true,
+                Nullable = isNullable,
+                PropertyType = GetPropertyType(propertyType),
                 Type = propertyType,
                 Properties = item.GetProperties().Select(prop => GetProperties(prop.PropertyType, prop.Name)).ToList()
             };
@@ -141,9 +148,11 @@ public class AssemblyInfoController : ControllerBase
 
         var property = new Property
         {
+            Assembly = type.Module.Name,
             DisplayName = name,
-            // Assembly = type.Module.Name,
+            Nullable = isNullable,
             // FullName = type.FullName,
+            PropertyType = GetPropertyType(propertyType),
             Type = propertyType
         };
 
@@ -277,5 +286,31 @@ public class AssemblyInfoController : ControllerBase
         }
 
         return assemblyFilters;
+    }
+
+    private PropertyTypes GetPropertyType(string property)
+    {
+        if (property.Contains("int"))
+        {
+            return PropertyTypes.Integer;
+        }
+
+        switch (property)
+        {
+            case "string":
+                return PropertyTypes.String;
+
+            case "decimal":
+                return PropertyTypes.Decimal;
+
+            case "boolean":
+                return PropertyTypes.Boolean;
+
+            case "List`1":
+                return PropertyTypes.List;
+
+            default:
+                return PropertyTypes.Object;
+        }
     }
 }
