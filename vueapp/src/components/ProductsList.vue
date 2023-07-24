@@ -41,20 +41,24 @@
     </div>
 </template>
 
-<script lang="js">
+<script lang="ts">
     import { defineComponent } from 'vue';
+    // import {ClassInfo } from '../lib/typeDefinitions';
+    import { ClassInfo } from '../lib/typeDefinitions'
+    import { ProductNames } from '../lib/typeDefinitions'
+    import { ServiceNames } from '../lib/typeDefinitions'
 
     export default defineComponent({
         data() {
             return {
                 loading: false,
-                classList: null,
+                classList: [] as ClassInfo[],
                 productList: null,
                 serviceList: null,
-                selectedService: null,
-                selectedProduct: null,
+                selectedService: ServiceNames.None,
+                selectedProduct: ProductNames.None,
                 selectedClass: null,
-                classInfo: null
+                classInfo:  null
             };
         },
         created() {
@@ -65,17 +69,17 @@
 
         },
         methods: {
-            productSelection(selectionValue) {
+            async productSelection(selectionValue: ProductNames ) {
                 this.selectedProduct = selectionValue;
-                this.fetchClasses(this.selectedService, selectionValue)
+                this.classList = await this.fetchClasses(this.selectedService, selectionValue)
             },
 
-            serviceSelection(selectionValue) {
+            async serviceSelection(selectionValue: ServiceNames) {
                 this.selectedService = selectionValue;
-                this.fetchClasses(selectionValue, this.selectedProduct);
+                this.classList = await this.fetchClasses(selectionValue, this.selectedProduct);
             },
 
-            async fetchClass(classListIndex){
+            async fetchClass(classListIndex: number){
 
                 console.log('classListIndex: ', classListIndex);
                 let thisClass = this.classList[classListIndex];
@@ -92,10 +96,9 @@
                 console.log('this.classInfo ', this.classInfo)
             },
 
-            async fetchClasses(serviceFilter, productFilter) {
+            async fetchClasses(serviceFilter: ServiceNames, productFilter: ProductNames): Promise<ClassInfo[]> {
                 if (!serviceFilter && !productFilter) {
-                    this.classList = null;
-                    return;
+                    return [];
                 }
 
                 if (!serviceFilter) {
@@ -103,7 +106,6 @@
                 }
 
                 if (!productFilter) {
-
                     productFilter = this.selectedProduct;
                 }
 
@@ -117,7 +119,6 @@
 
                 if (productFilter != null) {
                     if (parameterAdded === true) {
-
                         classesBaseUrl += '&'
                     }
 
@@ -125,9 +126,9 @@
                 }
 
                 let getClassesResponse = await fetch(classesBaseUrl).then(response => response.json());
-                this.classList = getClassesResponse.classes;
-
                 console.log(getClassesResponse);
+
+                return getClassesResponse.classes;
             },
 
             async fetchInitialData() {
