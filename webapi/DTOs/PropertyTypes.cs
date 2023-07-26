@@ -7,7 +7,7 @@
         Enum,
         Integer,
         List,
-        Object,
-        String
+        ObjectType,
+        StringType
     }
 }

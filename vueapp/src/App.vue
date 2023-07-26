@@ -17,7 +17,7 @@
             </el-select>
         </div>
         <div v-if="classList">
-            <el-select v-model="selectedClass" filterable class="m-2" @change="getProperties" placeholder="Class" size="large">
+            <el-select v-model="selectedClass" filterable class="m-2" placeholder="Class" size="large">
                 <el-option v-for="(classVar, index) in classList"
                             :key="index"
                             :label="classVar.displayName"
@@ -41,11 +41,15 @@
         </div>
     </div>
     </el-aside>
+    <el-main>
+      <DataDisplay :classData="classProperties" />
+    </el-main>
   </el-container>
 </template>
 
 <script lang="ts">
     import { defineComponent } from 'vue';
+    import DataDisplay from '../src/components/DataDisplay.vue';
     import { ClassInfo } from '../src/lib/typeDefinitions'
     import { Property } from '../src/lib/typeDefinitions';
     import { ProductNames } from '../src/lib/typeDefinitions'
@@ -54,6 +58,7 @@
 export default defineComponent({
   name: 'App',
     components: {
+      DataDisplay
   },
   data() {
             return {
@@ -64,7 +69,7 @@ export default defineComponent({
                 selectedService: ServiceNames.None,
                 selectedProduct: ProductNames.None,
                 selectedClass: "",
-                classProperties: null as Property | null
+                classProperties: {} as Property
             };
         },
         created() {
@@ -72,6 +77,10 @@ export default defineComponent({
         },
         watch: {
             '$route': 'fetchInitialData',
+            selectedClass(newSelection, oldSelection){
+                console.log('old selection: ', oldSelection)
+                this.getProperties(newSelection)
+            }
         },
 
         methods: {
@@ -99,6 +108,7 @@ export default defineComponent({
                 this.classProperties = response;
 
                 console.log("this.classProperties set to: ", this.classProperties)
+                // console.log('properties of new class: ', this.classProperties.properties[0])
             },
 
             async fetchClasses(serviceFilter: ServiceNames, productFilter: ProductNames): Promise<ClassInfo[]> {

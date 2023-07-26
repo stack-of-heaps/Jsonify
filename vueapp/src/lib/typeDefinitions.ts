@@ -8,11 +8,11 @@ export type ClassInfo = {
 
 export type Property = {
     displayName: string,
-    enumeratedProperties: string[],
+    enumeratedProperties?: string[],
     isCollection: boolean,
     isEnum: boolean,
     nullable: boolean,
-    properties: Property[],
+    properties?: Property[],
     type: string,
     propertyType: PropertyTypes,
 }
@@ -22,8 +22,8 @@ export enum PropertyTypes{
         Decimal = "Decimal",
         Enum = "Enum",
         Integer = "Integer",
-        Object = "Object",
-        String = "String"
+        ObjectType = "ObjectType",
+        StringType = "StringType"
 }
 
 export enum ProductNames {

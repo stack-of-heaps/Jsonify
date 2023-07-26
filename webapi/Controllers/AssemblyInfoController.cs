@@ -298,7 +298,7 @@ public class AssemblyInfoController : ControllerBase
         switch (property)
         {
             case "string":
-                return PropertyTypes.String;
+                return PropertyTypes.StringType;
 
             case "decimal":
                 return PropertyTypes.Decimal;
@@ -310,7 +310,7 @@ public class AssemblyInfoController : ControllerBase
                 return PropertyTypes.List;
 
             default:
-                return PropertyTypes.Object;
+                return PropertyTypes.ObjectType;
         }
     }
 }
