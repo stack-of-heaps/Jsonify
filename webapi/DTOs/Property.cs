@@ -4,6 +4,8 @@
     {
         public string Assembly { get; set; }
 
+        public int Depth { get; set; }
+
         public string DisplayName { get; set; }
 
         public bool Nullable { get; set; }

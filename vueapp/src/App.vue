@@ -1,46 +1,33 @@
 <template>
   <el-container>
-    <el-aside>
-      <div>
-        <div v-if="productList">
-            <el-select v-model="selectedService" filterable clearable class="m-2" @change="serviceSelection" placeholder="Service" size="large">
-                <el-option v-for="(service, index) in serviceList"
-                            :key="index"
-                            :label="service"
-                            :value="service" />
-            </el-select>
-            <el-select v-model="selectedProduct" filterable clearable class="m-2" @change="productSelection" placeholder="Product" size="large">
-                <el-option v-for="(product, index) in productList"
-                            :key="index"
-                            :label="product"
-                            :value="product" />
-            </el-select>
-        </div>
-        <div v-if="classList">
-            <el-select v-model="selectedClass" filterable class="m-2" placeholder="Class" size="large">
-                <el-option v-for="(classVar, index) in classList"
-                            :key="index"
-                            :label="classVar.displayName"
-                            :value="index" />
-            </el-select>
-
-            <div v-if="classProperties">
-                <p>classProperties present</p>
-                <div v-for="(property, index) in classProperties.properties" :key="index">
-                    <p>DisplayName: {{ property.displayName }}</p>
-                    <p>IsCollection: {{ property.isCollection }}</p>
-                    <p>Nullable: {{ property.nullable }}</p>
-                    <p>Type: {{ property.type }}</p>
-                    <p>PropertyType: {{ property.propertyType }}</p>
-                    <ul v-if="property.propertyType === 'Enum'">
-                        Enumerated properties: 
-                        <li v-for="(enumProperty, index) in property.enumeratedProperties" :key="index">{{ enumProperty }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    </el-aside>
+    <el-header>
+        <el-row :gutter="20" justify="center" v-if="productList">
+            <el-col :span="6">
+                <el-select v-model="selectedService" filterable clearable class="m-2" @change="serviceSelection" placeholder="Service" size="large">
+                    <el-option v-for="(service, index) in serviceList"
+                                :key="index"
+                                :label="service"
+                                :value="service" />
+                </el-select>
+            </el-col>
+            <el-col :span="6">
+                <el-select v-model="selectedProduct" filterable clearable class="m-2" @change="productSelection" placeholder="Product" size="large">
+                    <el-option v-for="(product, index) in productList"
+                                :key="index"
+                                :label="product"
+                                :value="product" />
+                </el-select>
+            </el-col>
+            <el-col :span="6" v-if="classList">
+                <el-select v-model="selectedClass" filterable class="m-2" placeholder="Class" size="large">
+                    <el-option v-for="(classVar, index) in classList"
+                                :key="index"
+                                :label="classVar.fullName"
+                                :value="index" />
+                </el-select>
+            </el-col>
+        </el-row>
+    </el-header>
     <el-main>
       <DataDisplay :classData="classProperties" />
     </el-main>

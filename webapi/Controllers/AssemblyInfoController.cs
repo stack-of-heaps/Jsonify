@@ -93,7 +93,7 @@ public class AssemblyInfoController : ControllerBase
         return Ok(GetProperties(type));
     }
 
-    private Property GetProperties(Type type, string name = null)
+    private Property GetProperties(Type type, string name = null, int depth = 0)
     {
         if (name == null)
         {
@@ -122,6 +122,7 @@ public class AssemblyInfoController : ControllerBase
             {
                 DisplayName = name,
                 Assembly = type.Module.Name,
+                Depth = depth,
                 Nullable = isNullable,
                 // FullName = type.FullName,
                 PropertyType = PropertyTypes.Enum,
@@ -138,17 +139,19 @@ public class AssemblyInfoController : ControllerBase
             {
                 Assembly = type.Module.Name,
                 DisplayName = name,
+                Depth = depth,
                 IsCollection = true,
                 Nullable = isNullable,
                 PropertyType = GetPropertyType(propertyType),
                 Type = propertyType,
-                Properties = item.GetProperties().Select(prop => GetProperties(prop.PropertyType, prop.Name)).ToList()
+                Properties = item.GetProperties().Select(prop => GetProperties(prop.PropertyType, prop.Name, depth + 1)).ToList()
             };
         }
 
         var property = new Property
         {
             Assembly = type.Module.Name,
+            Depth = depth,
             DisplayName = name,
             Nullable = isNullable,
             // FullName = type.FullName,
@@ -157,9 +160,11 @@ public class AssemblyInfoController : ControllerBase
         };
 
 
+        // WARNING!
+        // If this hits a class which uses recursion--e.g., V3 BaseQuestion, it will never end and throw stackoverflow exception.
         if (type.Namespace != "System")
         {
-            property.Properties = type.GetProperties().Select(prop => GetProperties(prop.PropertyType, prop.Name)).ToList();
+            property.Properties = type.GetProperties().Select(prop => GetProperties(prop.PropertyType, prop.Name, depth + 1)).ToList();
         };
 
         return property;
@@ -290,27 +295,27 @@ public class AssemblyInfoController : ControllerBase
 
     private PropertyTypes GetPropertyType(string property)
     {
-        if (property.Contains("int"))
+        if (property.Contains("Int"))
         {
             return PropertyTypes.Integer;
         }
 
         switch (property)
         {
-            case "string":
-                return PropertyTypes.StringType;
+            case "String":
+                return PropertyTypes.String;
 
-            case "decimal":
+            case "Decimal":
                 return PropertyTypes.Decimal;
 
-            case "boolean":
+            case "Boolean":
                 return PropertyTypes.Boolean;
 
             case "List`1":
                 return PropertyTypes.List;
 
             default:
-                return PropertyTypes.ObjectType;
+                return PropertyTypes.Object;
         }
     }
 }

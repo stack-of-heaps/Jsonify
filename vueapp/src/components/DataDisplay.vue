@@ -1,33 +1,34 @@
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { computed, defineProps, ref } from 'vue';
 import type {Ref} from 'vue';
 import { Property, PropertyTypes } from '../lib/typeDefinitions'
+import 'element-plus/es/components/message/style/css'
 
 interface Props {
     classData: Property
 }
 const props = defineProps<Props>()
-const currentProperty: Ref<string | number> = ref(props.classData.displayName)
-    const testData = "hello";
-    const testForm = "";
-
-    if(props.classData.type === "String"){
-        console.log("STRING")
-    }
-
+const currentPropertyValue: Ref<string | number> = ref("default")
+const computedDepth = computed(() => props.classData.depth * 3)
 </script>
 
+<style lang="scss">
+.el-row {
+  margin-bottom: 20px;
+}
+</style>
+
 <template>
-        <div v-if="props.classData">
+        <div align="left" v-if="props.classData">
             <el-row>
-                <el-col>
-                    <el-text class="mx-1" size="large">{{ props.classData.displayName }}</el-text>
+                <el-col :offset="computedDepth">
+                    <el-text class="mx-1"><b>{{ props.classData.displayName }}</b></el-text>
                 </el-col>
             </el-row>
             <el-row v-if="props.classData.propertyType === PropertyTypes.Boolean"> 
-                <el-col>
+                <el-col :offset="computedDepth">
                     <el-switch 
-                    v-model="currentProperty"
+                    v-model="currentPropertyValue"
                     size="small"
                     active-text="True"
                     inactive-text="False"
@@ -35,14 +36,14 @@ const currentProperty: Ref<string | number> = ref(props.classData.displayName)
                 </el-col>
             </el-row>
             <el-row v-if="props.classData.propertyType === PropertyTypes.Decimal"> 
-                <el-col>
-                    <el-input v-model="currentProperty" />
+                <el-col :offset="computedDepth">
+                    <el-input v-model="currentPropertyValue" size="small" />
                 </el-col>
             </el-row>
             <el-row v-if="props.classData.propertyType === PropertyTypes.Enum"> 
-                <el-col>
-                    <el-select v-model="currentProperty" filterable clearable class="m-2" placeholder="Choose One" size="large">
-                    <el-option v-for="(enumValue, index) in props.classData.enumeratedProperties"
+                <el-col :offset="computedDepth">
+                    <el-select v-model="currentPropertyValue" filterable clearable class="m-2" placeholder="Choose One" size="small">
+                    <el-option v-for="(enumValue, index) in props.classData.enumeratedProperties" size="small"
                                 :key="index"
                                 :label="enumValue"
                                 :value="enumValue" />
@@ -50,26 +51,22 @@ const currentProperty: Ref<string | number> = ref(props.classData.displayName)
                 </el-col>
             </el-row>
             <el-row v-if="props.classData.propertyType === PropertyTypes.Integer"> 
-                <el-col>
-                    <el-input v-model="currentProperty" />
+                <el-col :offset="computedDepth">
+                    <el-input v-model="currentPropertyValue" size="small" />
                 </el-col>
             </el-row>
             
-            <el-row v-if="props.classData.propertyType === PropertyTypes.ObjectType"> 
-                <el-col>
+            <el-row v-if="props.classData.propertyType === PropertyTypes.Object"> 
+                <el-col :offset="computedDepth">
                     <el-row v-for="(classProperty, index) in props.classData.properties" :key="index">
-                        <DataDisplay :classData="classProperty" />
+                        <DataDisplay :classData="classProperty"/>
                     </el-row>
                 </el-col>
             </el-row>
 
-            <el-row v-if="props.classData.propertyType === PropertyTypes.StringType"> 
-                <el-col>
-                    <el-form :model="testForm">
-                        <el-form-item label="String Test">
-                            <el-input v-model="testData" placeholder="placeholder" size="small"/>
-                        </el-form-item>
-                    </el-form>
+            <el-row v-if="props.classData.propertyType === PropertyTypes.String"> 
+                <el-col :offset="computedDepth">
+                        <el-input v-model="currentPropertyValue" placeholder="placeholder" size="small"/>
                 </el-col>
             </el-row>
         </div>
