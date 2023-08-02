@@ -17,12 +17,14 @@ export type Property = {
 }
 
 export enum PropertyTypes {
-        Boolean = "Boolean",
-        Decimal = "Decimal",
-        Enum = "Enum",
-        Integer = "Integer",
-        Object = "Object",
-        String = "String"
+    Boolean = "Boolean",
+    DateTime = "DateTime",
+    Decimal = "Decimal",
+    Enum = "Enum",
+    Integer = "Integer",
+    List = "List",
+    Object = "Object",
+    String = "String"
 }
 
 export enum ProductNames {

@@ -300,14 +300,17 @@ public class AssemblyInfoController : ControllerBase
 
         switch (property)
         {
-            case "String":
-                return PropertyTypes.String;
+            case "Boolean":
+                return PropertyTypes.Boolean;
+
+            case "DateTime":
+                return PropertyTypes.DateTime;
 
             case "Decimal":
                 return PropertyTypes.Decimal;
 
-            case "Boolean":
-                return PropertyTypes.Boolean;
+            case "String":
+                return PropertyTypes.String;
 
             default:
                 return PropertyTypes.Object;

@@ -3,6 +3,7 @@
     public enum PropertyTypes
     {
         Boolean,
+        DateTime,
         Decimal,
         Enum,
         Integer,
