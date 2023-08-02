@@ -127,7 +127,6 @@ public class AssemblyInfoController : ControllerBase
                 // FullName = type.FullName,
                 PropertyType = PropertyTypes.Enum,
                 Type = propertyType,
-                IsEnum = true,
                 EnumeratedProperties = enumValues
             };
         }
@@ -140,9 +139,8 @@ public class AssemblyInfoController : ControllerBase
                 Assembly = type.Module.Name,
                 DisplayName = name,
                 Depth = depth,
-                IsCollection = true,
                 Nullable = isNullable,
-                PropertyType = GetPropertyType(propertyType),
+                PropertyType = PropertyTypes.List,
                 Type = propertyType,
                 Properties = item.GetProperties().Select(prop => GetProperties(prop.PropertyType, prop.Name, depth + 1)).ToList()
             };
@@ -310,9 +308,6 @@ public class AssemblyInfoController : ControllerBase
 
             case "Boolean":
                 return PropertyTypes.Boolean;
-
-            case "List`1":
-                return PropertyTypes.List;
 
             default:
                 return PropertyTypes.Object;

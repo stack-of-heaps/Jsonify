@@ -10,8 +10,6 @@ export type Property = {
     displayName: string,
     depth: number,
     enumeratedProperties?: string[],
-    isCollection: boolean,
-    isEnum: boolean,
     nullable: boolean,
     properties?: Property[],
     type: string,

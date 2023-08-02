@@ -16,10 +16,6 @@
 
         public PropertyTypes PropertyType { get; set; }
 
-        public bool IsEnum { get; set; }
-
-        public bool IsCollection { get; set; }
-
         public string[]? EnumeratedProperties { get; set; }
     }
 }

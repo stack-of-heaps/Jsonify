@@ -9,12 +9,12 @@ interface Props {
 }
 const props = defineProps<Props>()
 const currentPropertyValue: Ref<string | number> = ref("default")
-const computedDepth = computed(() => props.classData.depth * 3)
+const computedDepth = computed(() => props.classData.depth )
 </script>
 
 <style lang="scss">
 .el-row {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 </style>
 
