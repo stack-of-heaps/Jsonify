@@ -9,11 +9,12 @@ export type ClassInfo = {
 export type Property = {
     displayName: string,
     depth: number,
-    enumeratedProperties?: string[],
+    enumeratedProperties: string[] | null,
     nullable: boolean,
-    properties?: Property[],
+    properties: Property[] | null,
     type: string,
     propertyType: PropertyTypes,
+    setValue: any
 }
 
 export enum PropertyTypes {
