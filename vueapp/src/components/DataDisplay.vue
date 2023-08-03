@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { defineProps, ref, computed } from 'vue';
 import type {Ref} from 'vue';
 import ListData from './ListData.vue'
 import { Property, PropertyTypes } from '../lib/typeDefinitions'
@@ -10,6 +10,20 @@ interface Props {
 }
 const props = defineProps<Props>()
 const currentPropertyValue: Ref<string | number> = ref("default")
+props.classData.setValue = currentPropertyValue;
+const computedColor = computed(() => {
+
+switch (props.classData.depth){
+    case 0: return '#F56C6C';
+    case 1: return '#f89898';
+    case 2: return '#fab6b6';
+    case 3: return '#fcd3d3';
+    case 4: return '#fde2e2';
+    case 5: return '#fef0f0';
+    default: return '#000000';
+    }
+})
+
 </script>
 
 <style lang="scss">
@@ -18,6 +32,8 @@ const currentPropertyValue: Ref<string | number> = ref("default")
 }
 
 .card-header {
+  display: flex;
+  justify-content: space-between;
   margin: 0;
   padding: 0;
 }
@@ -28,6 +44,7 @@ const currentPropertyValue: Ref<string | number> = ref("default")
 
 .text {
   font-size: 14px;
+  color: black;
 }
 
 .item {
@@ -41,10 +58,13 @@ const currentPropertyValue: Ref<string | number> = ref("default")
 
 <template>
     <div v-if="props.classData?.displayName">
-        <el-card :body-style="{ padding: '10px' }" class="box-card">
+        <el-card :body-style="{ padding: '10px' }" class="box-card" :style="{'background-color': computedColor}">
             <template #header>
                 <div align="left" class="card-header">
-                    <el-text class="mx-1"><b>{{ props.classData.displayName }}</b></el-text>
+                    <el-text class="text"><b>{{ props.classData.displayName }}</b></el-text>
+                    <div v-if="props.classData.propertyType === PropertyTypes.List">
+                        <el-input-number size="small" />
+                    </div>
                 </div>
             </template>
             <div v-if="props.classData.propertyType === PropertyTypes.Boolean" align="left"> 

@@ -9,7 +9,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-const listObjects = ref(0)
+const listObjects = ref(1)
 </script>
 
 <template>
@@ -20,8 +20,8 @@ const listObjects = ref(0)
         <el-input-number v-model="listObjects" />
         <div v-for="number in listObjects" v-bind:key="number">
             <div v-for="(classProperty, index) in props.classData.properties" :key="index">
-                        <DataDisplay :classData="classProperty"/>
-                    </div>
+                <DataDisplay :classData="classProperty"/>
+            </div>
         </div>
     </div>
 </template>
