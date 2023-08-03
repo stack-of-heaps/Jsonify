@@ -29,6 +29,8 @@
         </el-row>
     </el-header>
     <el-main>
+        <p>ClassData</p>
+        <p>{{ jsonifiedProperty }}</p>
       <DataDisplay :classData="classProperties" />
     </el-main>
   </el-container>
@@ -56,7 +58,8 @@ export default defineComponent({
                 selectedService: ServiceNames.None,
                 selectedProduct: ProductNames.None,
                 selectedClass: "",
-                classProperties: {} as Property
+                classProperties: {} as Property,
+                jsonifiedProperty: ""
             };
         },
         created() {
@@ -64,13 +67,31 @@ export default defineComponent({
         },
         watch: {
             '$route': 'fetchInitialData',
-            selectedClass(newSelection, oldSelection){
-                console.log('old selection: ', oldSelection)
+            selectedClass(newSelection){
                 this.getProperties(newSelection)
+            },
+            classProperties(newPropertyValue){
+                console.log("JSONIFIED: newPropertyValue: ", newPropertyValue)
+                this.propertiesToJson(newPropertyValue)
             }
         },
 
         methods: {
+            propertiesToJson(selectedProperty: Property): object {
+                return { [selectedProperty.displayName ] : this.getSubProperties(selectedProperty)}
+            },
+            getSubProperties(property: Property): any {
+                if (!property.properties){
+                    return property.setValue;
+                }
+
+                let newObject: Record<string, any> = {};
+                property.properties.forEach(element => {
+                    newObject[element.displayName] = element.setValue
+                })
+
+                return newObject;
+            },
             async productSelection(selectionValue: ProductNames): Promise<void> {
                 this.selectedProduct = selectionValue;
                 this.classList = await this.fetchClasses(this.selectedService, selectionValue)
@@ -81,9 +102,7 @@ export default defineComponent({
                 this.classList = await this.fetchClasses(selectionValue, this.selectedProduct);
             },
 
-            async getProperties(classListIndex: number): Promise<void> {
-                console.log('value from class dropdown: ', classListIndex)
-
+            async getProperties(classListIndex: number): Promise<Property> {
                 let thisClass = this.classList[classListIndex];
                 let namespace = thisClass.namespace
                 let fullClassName = thisClass.fullName
@@ -91,11 +110,9 @@ export default defineComponent({
 
                 let response = await fetch(classesBaseUrl).then(response => response.json());
 
-                console.log("getProperties response: ", response)
                 this.classProperties = response;
 
-                console.log("this.classProperties set to: ", this.classProperties)
-                // console.log('properties of new class: ', this.classProperties.properties[0])
+                return response;
             },
 
             async fetchClasses(serviceFilter: ServiceNames, productFilter: ProductNames): Promise<ClassInfo[]> {
@@ -118,7 +135,6 @@ export default defineComponent({
                 classesBaseUrl += `productName=${productFilter}`
 
                 let getClassesResponse = await fetch(classesBaseUrl).then(response => response.json());
-                console.log(getClassesResponse);
 
                 return getClassesResponse.classes;
             },
