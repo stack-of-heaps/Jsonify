@@ -11,10 +11,19 @@ export type Property = {
     depth: number,
     enumeratedProperties: string[] | null,
     nullable: boolean,
-    properties: Property[] | null,
-    type: string,
+    properties: Property[],
+    propertyType: PropertyTypes
+}
+
+export type JsonifyProperty = {
+    displayName: string,
+    depth: number,
+    enumeratedProperties: string[] | null,
+    nullable: boolean,
+    properties: JsonifyProperty[] | undefined,
     propertyType: PropertyTypes,
-    setValue: any
+    setValue: any,
+    arraySize: number
 }
 
 export enum PropertyTypes {
