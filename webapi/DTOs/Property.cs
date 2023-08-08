@@ -12,8 +12,6 @@
 
         public List<Property> Properties { get; set; }
 
-        public string Type { get; set; }
-
         public PropertyTypes PropertyType { get; set; }
 
         public string[]? EnumeratedProperties { get; set; }

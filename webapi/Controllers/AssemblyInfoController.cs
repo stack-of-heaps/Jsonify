@@ -124,9 +124,7 @@ public class AssemblyInfoController : ControllerBase
                 Assembly = type.Module.Name,
                 Depth = depth,
                 Nullable = isNullable,
-                // FullName = type.FullName,
                 PropertyType = PropertyTypes.Enum,
-                Type = propertyType,
                 EnumeratedProperties = enumValues
             };
         }
@@ -141,7 +139,6 @@ public class AssemblyInfoController : ControllerBase
                 Depth = depth,
                 Nullable = isNullable,
                 PropertyType = PropertyTypes.List,
-                Type = propertyType,
                 Properties = item.GetProperties().Select(prop => GetProperties(prop.PropertyType, prop.Name, depth + 1)).ToList()
             };
         }
@@ -152,9 +149,7 @@ public class AssemblyInfoController : ControllerBase
             Depth = depth,
             DisplayName = name,
             Nullable = isNullable,
-            // FullName = type.FullName,
-            PropertyType = GetPropertyType(propertyType),
-            Type = propertyType
+            PropertyType = GetPropertyType(propertyType)
         };
 
 
