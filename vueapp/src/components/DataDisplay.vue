@@ -10,7 +10,6 @@ interface Props {
 }
 const props = defineProps<Props>()
 const currentPropertyValue: Ref<string | number> = ref("default")
-props.classData.setValue = currentPropertyValue;
 const computedColor = computed(() => {
 
 switch (props.classData.depth){
