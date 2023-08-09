@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
-import { Property } from '../lib/typeDefinitions'
+import { ref } from 'vue';
+import { JsonifyProperty } from '../lib/typeDefinitions'
 import DataDisplay from './DataDisplay.vue'
 import 'element-plus/es/components/message/style/css'
 
 interface Props {
-    classData: Property
+    classData: JsonifyProperty
 }
 
 const props = defineProps<Props>()

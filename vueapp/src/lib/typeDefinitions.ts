@@ -18,9 +18,9 @@ export type Property = {
 export type JsonifyProperty = {
     displayName: string,
     depth: number,
-    enumeratedProperties: string[] | null,
+    enumeratedProperties?: string[],
     nullable: boolean,
-    properties: JsonifyProperty[] | undefined,
+    properties: JsonifyProperty[],
     propertyType: PropertyTypes,
     setValue: any,
     arraySize: number

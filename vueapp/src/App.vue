@@ -29,14 +29,16 @@
         </el-row>
     </el-header>
     <el-main>
-      <DataDisplay :classData="classProperties" />
+        <div v-if="classLoaded">
+            <DataMaster :property="classProperties" :propertyProvided="classLoaded" />
+        </div>
     </el-main>
   </el-container>
 </template>
 
 <script setup lang="ts">
     import { onMounted,  watch, ref } from 'vue';
-    import DataDisplay from '../src/components/DataDisplay.vue';
+    import DataMaster from '../src/components/DataMaster.vue';
     import { ClassInfo, Property, ProductNames, ServiceNames } from '../src/lib/typeDefinitions'
 
     const classLoaded = ref(false);
