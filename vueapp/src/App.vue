@@ -37,10 +37,7 @@
 <script setup lang="ts">
     import { onMounted,  watch, ref } from 'vue';
     import DataDisplay from '../src/components/DataDisplay.vue';
-    import { ClassInfo } from '../src/lib/typeDefinitions'
-    import { Property } from '../src/lib/typeDefinitions';
-    import { ProductNames } from '../src/lib/typeDefinitions'
-    import { ServiceNames } from '../src/lib/typeDefinitions'
+    import { ClassInfo, Property, ProductNames, ServiceNames } from '../src/lib/typeDefinitions'
 
     const classLoaded = ref(false);
     const classList = ref<ClassInfo[]>([]);
@@ -49,7 +46,10 @@
     const selectedService = ref<ServiceNames>(ServiceNames.None);
     const selectedProduct = ref<ProductNames>(ProductNames.None)
     const selectedClass = ref(0);
-    const classProperties = ref<Property | null>(null);
+    const classProperties = ref<Property>({} as Property);
+    
+    onMounted(() => { fetchInitialData(); })
+    watch(selectedClass, async (newSelection) => { getProperties(newSelection)});
 
     async function productSelection(selectionValue: ProductNames): Promise<void> {
                 selectedProduct.value = selectionValue;
@@ -116,11 +116,6 @@
         return;
     }
             
-    onMounted(() => {
-        fetchInitialData();
-    })
-
-    watch(selectedClass, async (newSelection) => { getProperties(newSelection)});
 </script>
 
 <style>
