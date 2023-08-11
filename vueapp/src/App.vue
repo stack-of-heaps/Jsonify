@@ -5,25 +5,25 @@
             <el-col :span="6">
                 <el-select v-model="selectedService" filterable clearable class="m-2" @change="serviceSelection" placeholder="Service" size="large">
                     <el-option v-for="(service, index) in serviceList"
-                                :key="index"
-                                :label="service"
-                                :value="service" />
+                        :key="index"
+                        :label="service"
+                        :value="service" />
                 </el-select>
             </el-col>
             <el-col :span="6">
                 <el-select v-model="selectedProduct" filterable clearable class="m-2" @change="productSelection" placeholder="Product" size="large">
                     <el-option v-for="(product, index) in productList"
-                                :key="index"
-                                :label="product"
-                                :value="product" />
+                        :key="index"
+                        :label="product"
+                        :value="product" />
                 </el-select>
             </el-col>
             <el-col :span="6" v-if="classList">
                 <el-select v-model="selectedClass" filterable class="m-2" placeholder="Class" size="large">
                     <el-option v-for="(classVar, index) in classList"
-                                :key="index"
-                                :label="classVar.fullName"
-                                :value="index" />
+                        :key="index"
+                        :label="classVar.fullName"
+                        :value="index" />
                 </el-select>
             </el-col>
         </el-row>
