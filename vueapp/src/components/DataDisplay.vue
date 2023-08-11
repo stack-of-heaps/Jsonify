@@ -8,7 +8,6 @@ interface Props {
     classData: JsonifyProperty
 }
 const props = defineProps<Props>()
-// const currentPropertyValue: Ref<string | number> = ref("default")
 const computedColor = computed(() => {
 
 switch (props.classData.depth){
@@ -67,12 +66,12 @@ switch (props.classData.depth){
                 </div>
             </template>
             <div v-if="props.classData.propertyType === PropertyTypes.Boolean" align="left"> 
-                    <el-switch 
-                    v-model="props.classData.setValue"
-                    size="small"
-                    active-text="True"
-                    inactive-text="False"
-                    />
+                <el-switch 
+                v-model="props.classData.setValue"
+                size="small"
+                active-text="True"
+                inactive-text="False"
+                />
             </div>
             <div v-if="props.classData.propertyType === PropertyTypes.DateTime" align="left"> 
                 <div class="block">
@@ -87,15 +86,15 @@ switch (props.classData.depth){
                     <el-input v-model="props.classData.setValue" size="small" />
             </div>
             <div v-if="props.classData.propertyType === PropertyTypes.Enum" align="left"> 
-                    <el-select v-model="props.classData.setValue" filterable clearable class="m-2" placeholder="Choose One" size="small">
-                    <el-option v-for="(enumValue, index) in props.classData.enumeratedProperties" size="small"
-                                :key="index"
-                                :label="enumValue"
-                                :value="enumValue" />
-                    </el-select> 
+                <el-select v-model="props.classData.setValue" filterable clearable class="m-2" placeholder="Choose One" size="small">
+                <el-option v-for="(enumValue, index) in props.classData.enumeratedProperties" size="small"
+                            :key="index"
+                            :label="enumValue"
+                            :value="enumValue" />
+                </el-select> 
             </div>
             <div v-if="props.classData.propertyType === PropertyTypes.Integer"> 
-                    <el-input v-model="props.classData.setValue" size="small" />
+                <el-input v-model="props.classData.setValue" size="small" />
             </div>
 
             <div v-if="props.classData.propertyType === PropertyTypes.List">
@@ -103,13 +102,13 @@ switch (props.classData.depth){
             </div>
             
             <div v-if="props.classData.propertyType === PropertyTypes.Object"> 
-                    <div v-for="(classProperty, index) in props.classData.properties" :key="index">
-                        <DataDisplay :classData="classProperty"/>
-                    </div>
+                <div v-for="(classProperty, index) in props.classData.properties" :key="index">
+                    <DataDisplay :classData="classProperty"/>
+                </div>
             </div>
 
             <div v-if="props.classData.propertyType === PropertyTypes.String"> 
-                        <el-input v-model="props.classData.setValue" placeholder="placeholder" size="small"/>
+                <el-input v-model="props.classData.setValue" placeholder="placeholder" size="small"/>
             </div>
         </el-card>
     </div>

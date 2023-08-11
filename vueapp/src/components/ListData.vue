@@ -22,5 +22,4 @@ interface Props {
 
 const props = defineProps<Props>()
 
-console.log("LISADATA RE-RENDERING")
 </script>

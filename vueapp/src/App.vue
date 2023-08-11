@@ -37,90 +37,90 @@
 </template>
 
 <script setup lang="ts">
-    import { onMounted,  watch, ref } from 'vue';
-    import DataMaster from '../src/components/DataMaster.vue';
-    import { ClassInfo, Property, ProductNames, ServiceNames } from '../src/lib/typeDefinitions'
+import { onMounted,  watch, ref } from 'vue';
+import DataMaster from '../src/components/DataMaster.vue';
+import { ClassInfo, Property, ProductNames, ServiceNames } from '../src/lib/typeDefinitions'
 
-    const classLoaded = ref(false);
-    const classList = ref<ClassInfo[]>([]);
-    const productList = ref<string[]>(['']);
-    const serviceList = ref<string[]>(['']);
-    const selectedService = ref<ServiceNames>(ServiceNames.None);
-    const selectedProduct = ref<ProductNames>(ProductNames.None)
-    const selectedClass = ref<number | null>(null);
-    const classProperties = ref<Property>({} as Property);
-    
-    onMounted(() => { fetchInitialData(); })
-    watch(selectedClass, async (newSelection) => { getProperties(newSelection)});
+const classLoaded = ref(false);
+const classList = ref<ClassInfo[]>([]);
+const productList = ref<string[]>(['']);
+const serviceList = ref<string[]>(['']);
+const selectedService = ref<ServiceNames>(ServiceNames.None);
+const selectedProduct = ref<ProductNames>(ProductNames.None)
+const selectedClass = ref<number | null>(null);
+const classProperties = ref<Property>({} as Property);
 
-    async function productSelection(selectionValue: ProductNames): Promise<void> {
-                selectedProduct.value = selectionValue;
-                classList.value = await fetchClasses(selectedService.value, selectionValue)
-            }
+onMounted(() => { fetchInitialData(); })
+watch(selectedClass, async (newSelection) => { getProperties(newSelection)});
 
-    async function fetchClasses(serviceFilter: ServiceNames, productFilter: ProductNames): Promise<ClassInfo[]> {
-        if (!serviceFilter && !productFilter) {
-            return [];
-        }
+async function productSelection(selectionValue: ProductNames): Promise<void> {
+    selectedProduct.value = selectionValue;
+    classList.value = await fetchClasses(selectedService.value, selectionValue)
+}
 
-        serviceFilter = serviceFilter ?? selectedService;
-        productFilter = productFilter ?? selectedProduct
-
-        let classesBaseUrl = 'https://localhost:7219/assemblyInfo/classes?';
-        let parameterAdded = false;
-
-        if (serviceFilter != null) {
-            classesBaseUrl += `serviceName=${serviceFilter}`
-            parameterAdded = true;
-        }
-
-        classesBaseUrl += parameterAdded ? '&' : '';
-        classesBaseUrl += `productName=${productFilter}`
-
-        let getClassesResponse = await fetch(classesBaseUrl).then(response => response.json());
-
-        return getClassesResponse.classes;
+async function fetchClasses(serviceFilter: ServiceNames, productFilter: ProductNames): Promise<ClassInfo[]> {
+    if (!serviceFilter && !productFilter) {
+        return [];
     }
 
-    async function serviceSelection(selectionValue: ServiceNames): Promise<void> {
-        selectedService.value = selectionValue;
-        classList.value = await fetchClasses(selectionValue, selectedProduct.value);
+    serviceFilter = serviceFilter ?? selectedService;
+    productFilter = productFilter ?? selectedProduct
+
+    let classesBaseUrl = 'https://localhost:7219/assemblyInfo/classes?';
+    let parameterAdded = false;
+
+    if (serviceFilter != null) {
+        classesBaseUrl += `serviceName=${serviceFilter}`
+        parameterAdded = true;
     }
 
-    async function getProperties(classListIndex: number | null): Promise<Property> {
-        if (!classListIndex){
-            return {} as Property;
-        }
+    classesBaseUrl += parameterAdded ? '&' : '';
+    classesBaseUrl += `productName=${productFilter}`
 
-        classLoaded.value = false;
+    let getClassesResponse = await fetch(classesBaseUrl).then(response => response.json());
 
-        let thisClass = classList.value[classListIndex];
-        let namespace = thisClass.namespace
-        let fullClassName = thisClass.fullName
-        let classesBaseUrl = `https://localhost:7219/assemblyInfo/classes/${fullClassName}/properties?namespace=${namespace}`
+    return getClassesResponse.classes;
+}
 
-        let response = await fetch(classesBaseUrl).then(response => response.json());
+async function serviceSelection(selectionValue: ServiceNames): Promise<void> {
+    selectedService.value = selectionValue;
+    classList.value = await fetchClasses(selectionValue, selectedProduct.value);
+}
 
-        classProperties.value = response;
-        classLoaded.value = true;
-
-        return response;
+async function getProperties(classListIndex: number | null): Promise<Property> {
+    if (!classListIndex){
+        return {} as Property;
     }
-    
-    async function fetchInitialData() {
-        let assemblyInfoBaseUrl = 'https://localhost:7219/assemblyInfo/';
 
-        let allCalls = Promise.all([
-            fetch(assemblyInfoBaseUrl + 'products').then(response => response.json()),
-            fetch(assemblyInfoBaseUrl + 'services').then(response => response.json())
-        ]);
+    classLoaded.value = false;
 
-        let results = await allCalls;
-        productList.value = results[0];
-        serviceList.value = results[1];
+    let thisClass = classList.value[classListIndex];
+    let namespace = thisClass.namespace
+    let fullClassName = thisClass.fullName
+    let classesBaseUrl = `https://localhost:7219/assemblyInfo/classes/${fullClassName}/properties?namespace=${namespace}`
 
-        return;
-    }
+    let response = await fetch(classesBaseUrl).then(response => response.json());
+
+    classProperties.value = response;
+    classLoaded.value = true;
+
+    return response;
+}
+
+async function fetchInitialData() {
+    let assemblyInfoBaseUrl = 'https://localhost:7219/assemblyInfo/';
+
+    let allCalls = Promise.all([
+        fetch(assemblyInfoBaseUrl + 'products').then(response => response.json()),
+        fetch(assemblyInfoBaseUrl + 'services').then(response => response.json())
+    ]);
+
+    let results = await allCalls;
+    productList.value = results[0];
+    serviceList.value = results[1];
+
+    return;
+}
             
 </script>
 
