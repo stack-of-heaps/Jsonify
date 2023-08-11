@@ -19,6 +19,7 @@ function getObject(properties: Property[]): Record<string, any> {
         newObject[property.displayName] = getDefaultValue(property)
     })
 
+
     return newObject
 }
 
@@ -44,7 +45,7 @@ function getDefaultValue(property: Property): any {
             return 0;
 
         case PropertyTypes.List:{
-            let newArray = [{}]
+            let newArray = []
             newArray.push(getObject(property.properties));
             return newArray;
         }
@@ -61,6 +62,7 @@ function getDefaultValue(property: Property): any {
 }
 
 function mapToJsonifyProperty(property: Property): JsonifyProperty {
+    
     return {
         displayName: property.displayName,
         depth: property.depth,
@@ -78,9 +80,10 @@ function mapToJsonifyProperties(properties: Property[]): JsonifyProperty[] | [] 
         return []
     }
 
+    console.log("PROPERTIES: ", properties)
+
     return properties.map(property => mapToJsonifyProperty(property))
 }
-
 
 </script>
 
@@ -88,26 +91,21 @@ function mapToJsonifyProperties(properties: Property[]): JsonifyProperty[] | [] 
     .box{
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-evenly;
+        gap: 50px
     }
-
 </style>
 
 <template>
     <div v-if="propertyProvided">
-        <el-row>
-            <p>Data Master</p>
-        </el-row>
-        <el-row>
-            <div class="box">
-                <div>
-                    <DataDisplay :classData="mappedProperty" />
-                </div>
-                <div>
-                    <JsonView :jsonify-property="mappedProperty" />
-                </div>
+        <div class="box">
+            <div>
+                <DataDisplay :classData="mappedProperty" />
             </div>
-        </el-row>
+            <div>
+                <JsonView :jsonify-property="mappedProperty" />
+            </div>
+        </div>
     </div>
     <div v-else>No data yet.</div>
 </template>

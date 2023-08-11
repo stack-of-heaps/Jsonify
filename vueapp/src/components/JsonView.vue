@@ -7,44 +7,26 @@ interface Props {
 }
 const props = defineProps<Props>()
 
-function getProperty(property: JsonifyProperty, tempObject: Record<string, any>): any {
-    /*
-    if (property.propertyType !== PropertyTypes.Object){
-        tempObject[property.displayName] = property.setValue;
-    }
-    else {
-        tempObject[property.displayName] = getObject(property.properties)
-    }
-    return tempObject;
-    */
-
-    // Code above produces circular recursion error.
-    // Code below works correctly on initial render but updates
-    // to nested objects are not working.
-    tempObject[property.displayName] = property.setValue;
-    return tempObject;
-}
-
-function getObject(properties: JsonifyProperty[]): object{
+function getObject(properties: JsonifyProperty[]): Record<string, any> {
     let newObject: Record<string, any> = {}
     properties.forEach(property => {
-        newObject[property.displayName] = getProperty(property, newObject)
+        newObject[property.displayName] = getDefaultValue(property)
     })
 
     return newObject
 }
 
-function seed(input: JsonifyProperty) : string {
-    let propertiesObject = {}
-    props.jsonifyProperty.properties?.map(property => getProperty(property, propertiesObject))
-    let jsonObject = { [props.jsonifyProperty.displayName] : propertiesObject }
-
-    return JSON.stringify(jsonObject)
+function getDefaultValue(property: JsonifyProperty): any {
+    if (property.propertyType === PropertyTypes.Object)
+        return getObject(property.properties)
+    else
+        return property.setValue
 }
-
 </script>
 
 <template>
-    <div>Json Output</div>
-    <div>{{ seed($props.jsonifyProperty) }}</div>
+    <div>
+        <p><h1>{{ props.jsonifyProperty.displayName }}</h1></p>
+        <pre>{{ JSON.stringify(getDefaultValue(props.jsonifyProperty), null, 2) }}</pre>
+    </div>
 </template>

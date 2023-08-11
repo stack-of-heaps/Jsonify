@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import type {Ref} from 'vue';
+import { computed } from 'vue';
 import ListData from './ListData.vue'
 import { JsonifyProperty, PropertyTypes } from '../lib/typeDefinitions'
 import 'element-plus/es/components/message/style/css'
@@ -51,18 +50,19 @@ switch (props.classData.depth){
 }
 
 .box-card {
+    min-width: 400px;
   max-width: 500px;
 }
 </style>
 
 <template>
     <div v-if="props.classData?.displayName">
-        <el-card :body-style="{ padding: '10px' }" class="box-card" :style="{'background-color': computedColor}">
+        <el-card class="box-card" :style="{'background-color': computedColor}">
             <template #header>
                 <div align="left" class="card-header">
                     <el-text class="text"><b>{{ props.classData.displayName }}</b></el-text>
                     <div v-if="props.classData.propertyType === PropertyTypes.List">
-                        <el-input-number size="small" />
+                        <el-input-number size="small" v-model="props.classData.arraySize" />
                     </div>
                 </div>
             </template>

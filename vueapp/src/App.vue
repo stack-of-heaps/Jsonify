@@ -47,7 +47,7 @@
     const serviceList = ref<string[]>(['']);
     const selectedService = ref<ServiceNames>(ServiceNames.None);
     const selectedProduct = ref<ProductNames>(ProductNames.None)
-    const selectedClass = ref(0);
+    const selectedClass = ref<number | null>(null);
     const classProperties = ref<Property>({} as Property);
     
     onMounted(() => { fetchInitialData(); })
@@ -87,7 +87,11 @@
         classList.value = await fetchClasses(selectionValue, selectedProduct.value);
     }
 
-    async function getProperties(classListIndex: number): Promise<Property> {
+    async function getProperties(classListIndex: number | null): Promise<Property> {
+        if (!classListIndex){
+            return {} as Property;
+        }
+
         classLoaded.value = false;
 
         let thisClass = classList.value[classListIndex];
@@ -125,7 +129,6 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
   margin-top: 60px;
 }
