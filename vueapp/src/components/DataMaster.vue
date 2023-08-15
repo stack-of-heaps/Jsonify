@@ -44,12 +44,6 @@ function getDefaultValue(property: Property): any {
         case PropertyTypes.Integer:
             return 0;
 
-        case PropertyTypes.List:{
-            let newArray = []
-            newArray.push(getObject(property.properties));
-            return newArray;
-        }
-
         case PropertyTypes.Object:
             return getObject(property.properties)
 
@@ -62,25 +56,32 @@ function getDefaultValue(property: Property): any {
 }
 
 function mapToJsonifyProperty(property: Property): JsonifyProperty {
-    
-    return {
+   
+    let collections = {};
+    let properties = mapToJsonifyProperties(property.properties);
+    let jsonifyProperty = {
         displayName: property.displayName,
         depth: property.depth,
         enumeratedProperties: property.enumeratedProperties ?? [],
-        nullable: property.nullable,
         properties: mapToJsonifyProperties(property.properties),
         propertyType: property.propertyType,
         setValue: getDefaultValue(property),
         arraySize: 1
+    } as JsonifyProperty
+
+    if (property.propertyType === PropertyTypes.List){
+        collections = { 1: properties };
+        jsonifyProperty.collections = collections
+        jsonifyProperty.setValue = "shouldn't be seeing this";
     }
+
+    return jsonifyProperty;
 }
 
 function mapToJsonifyProperties(properties: Property[]): JsonifyProperty[] | [] {
     if (!properties){
         return []
     }
-
-    console.log("PROPERTIES: ", properties)
 
     return properties.map(property => mapToJsonifyProperty(property))
 }

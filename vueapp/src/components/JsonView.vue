@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
 import { JsonifyProperty, PropertyTypes } from '../lib/typeDefinitions'
 
 interface Props {
@@ -19,6 +18,13 @@ function getObject(properties: JsonifyProperty[]): Record<string, any> {
 function getDefaultValue(property: JsonifyProperty): any {
     if (property.propertyType === PropertyTypes.Object)
         return getObject(property.properties)
+    else if (property.propertyType === PropertyTypes.List){
+        let newArray = []
+        for (let key in property.collections){
+            newArray.push(getObject(property.collections[key]))
+        }
+        return newArray
+    }
     else
         return property.setValue
 }

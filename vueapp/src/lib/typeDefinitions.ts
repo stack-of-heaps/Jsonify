@@ -10,7 +10,6 @@ export type Property = {
     displayName: string,
     depth: number,
     enumeratedProperties: string[] | null,
-    nullable: boolean,
     properties: Property[],
     propertyType: PropertyTypes
 }
@@ -19,10 +18,10 @@ export type JsonifyProperty = {
     displayName: string,
     depth: number,
     enumeratedProperties?: string[],
-    nullable: boolean,
     properties: JsonifyProperty[],
     propertyType: PropertyTypes,
     setValue: any,
+    collections: Record<number, JsonifyProperty[]>,
     arraySize: number
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import ListData from './ListData.vue'
 import { JsonifyProperty, PropertyTypes } from '../lib/typeDefinitions'
 import 'element-plus/es/components/message/style/css'
@@ -20,6 +20,7 @@ switch (props.classData.depth){
     default: return '#000000';
     }
 })
+
 
 </script>
 
