@@ -2,8 +2,7 @@ export type ClassInfo = {
     displayName: string,
     fullName: string,
     namespace: string,
-    product: string,
-    version: string
+    product: string
 }
 
 export type Property = {

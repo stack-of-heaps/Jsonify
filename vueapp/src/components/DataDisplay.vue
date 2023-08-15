@@ -7,6 +7,7 @@ import 'element-plus/es/components/message/style/css'
 interface Props {
     classData: JsonifyProperty
 }
+
 const props = defineProps<Props>()
 const computedColor = computed(() => {
 
@@ -20,15 +21,9 @@ switch (props.classData.depth){
     default: return '#000000';
     }
 })
-
-
 </script>
 
 <style lang="scss">
-.el-row {
-  margin-bottom: 5px;
-}
-
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -36,22 +31,9 @@ switch (props.classData.depth){
   padding: 0;
 }
 
-.testDiv {
-    height: 80px;
-}
-
 .text {
   font-size: 14px;
   color: black;
-}
-
-.item {
-  margin-bottom: 18px;
-}
-
-.box-card {
-    min-width: 400px;
-  max-width: 500px;
 }
 </style>
 
