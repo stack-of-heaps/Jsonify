@@ -102,13 +102,11 @@ public class AssemblyInfoController : ControllerBase
 
         var nullablePropertyType = Nullable.GetUnderlyingType(type);
         var propertyType = string.Empty;
-        var isNullable = false;
 
         if (nullablePropertyType != null)
         {
             type = nullablePropertyType;
             propertyType = nullablePropertyType.Name;
-            isNullable = true;
         }
         else
         {
@@ -123,7 +121,6 @@ public class AssemblyInfoController : ControllerBase
                 DisplayName = name,
                 Assembly = type.Module.Name,
                 Depth = depth,
-                Nullable = isNullable,
                 PropertyType = PropertyTypes.Enum,
                 EnumeratedProperties = enumValues
             };
@@ -137,7 +134,6 @@ public class AssemblyInfoController : ControllerBase
                 Assembly = type.Module.Name,
                 DisplayName = name,
                 Depth = depth,
-                Nullable = isNullable,
                 PropertyType = PropertyTypes.List,
                 Properties = item.GetProperties().Select(prop => GetProperties(prop.PropertyType, prop.Name, depth + 1)).ToList()
             };
@@ -148,10 +144,8 @@ public class AssemblyInfoController : ControllerBase
             Assembly = type.Module.Name,
             Depth = depth,
             DisplayName = name,
-            Nullable = isNullable,
             PropertyType = GetPropertyType(propertyType)
         };
-
 
         // WARNING!
         // If this hits a class which uses recursion--e.g., V3 BaseQuestion, it will never end and throw stackoverflow exception.
@@ -213,7 +207,6 @@ public class AssemblyInfoController : ControllerBase
                     Product = product,
                     FullName = fullName,
                     Namespace = assemblyName,
-                    Version = GetVersion(fullName)
                 };
             }
         }
@@ -229,23 +222,6 @@ public class AssemblyInfoController : ControllerBase
         }
 
         return productSearchFilter;
-    }
-
-    private string GetVersion(string fullClassName)
-    {
-        if (fullClassName.Contains("V2") || fullClassName.Contains("Api"))
-        {
-            return "2";
-        }
-
-        if (fullClassName.Contains("V3"))
-        {
-            return fullClassName.Contains("Quote")
-                ? "2"
-                : "3";
-        }
-
-        return "1";
     }
 
     private List<string> GetAssemblyFilter(ServiceNames? serviceName)
