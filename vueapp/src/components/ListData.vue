@@ -1,8 +1,5 @@
 <template>
     <div>
-        <p>Number of items: {{ props.jsonifyProperty.arraySize }}</p>
-    </div>
-    <div>
         <div v-for="(jsonifyPropertyArray, index) in props.jsonifyProperty.collections" :key="index">
             <div v-for="(jsonifyProperty, index) in jsonifyPropertyArray" :key="'jsonProp' + index">
                 <DataDisplay :jsonifyProperty="jsonifyProperty"/>

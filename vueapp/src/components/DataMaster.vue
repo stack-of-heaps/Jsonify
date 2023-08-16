@@ -16,6 +16,8 @@ const mappedProperty = ref(mapToJsonifyProperty(props.property))
 function getDefaultValue(property: DotNetProperty): any {
     switch(property.propertyType){
         case PropertyTypes.Boolean:
+            if (property.displayName === "IsCitizen")
+                return true;
             return false;
 
         case PropertyTypes.DateTime:
@@ -24,19 +26,49 @@ function getDefaultValue(property: DotNetProperty): any {
         case PropertyTypes.Decimal:
             return 0.0;
 
+        // For Country, set default value to USA.
+        // For State, set default value to NE.
         case PropertyTypes.Enum:
             // This should never happen. But just in case.
             if (!property.enumeratedProperties){
                 return null;
             }
 
+            let usaIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "USA");
+            if (usaIndex !== -1){
+                return property.enumeratedProperties[usaIndex]
+            }
+
+            let neIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "NE");
+            if (neIndex !== -1){
+                return property.enumeratedProperties[neIndex]
+            }
+
+            let purposeOfInsuranceIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "PurposeOfInsurance")
+            if (purposeOfInsuranceIndex !== -1){
+                return property.enumeratedProperties[purposeOfInsuranceIndex]
+            }
+
             return property.enumeratedProperties[0]
 
         case PropertyTypes.Integer:
-            return 0;
+            switch (property.displayName){
+                case "Feet":
+                    return 5;
+                case "Inches":
+                    return 10;
+                case "WeightInPounds":
+                    return 175;
+                default:
+                    return 0;
+            }
 
         case PropertyTypes.Object:
             {
+                if (property.displayName === "IndividualInterview"){
+                    return null;
+                }
+
                 let newObject: Record<string, any> = {}
                 property.properties.forEach(property => {
                     newObject[property.displayName] = getDefaultValue(property)
@@ -46,15 +78,22 @@ function getDefaultValue(property: DotNetProperty): any {
             }
 
         case PropertyTypes.String:
-            return property.displayName;
-
-        default:
-            return "abc";
+            switch (property.displayName){
+                case "EmailAddress": 
+                    return "exampleEmail@email.com";
+                case "AreaCode":
+                    return "402";
+                case "Number":
+                    return "555-2342";
+                case "ZipCode":
+                    return "68506";
+                default:
+                    return property.displayName;
+            }
     }
 }
 
 function mapToJsonifyProperty(property: DotNetProperty): JsonifyProperty {
-   
     let mappedProperties = [] as JsonifyProperty[]
     if (property.properties){
         mappedProperties = property.properties.map(property => mapToJsonifyProperty(property))
@@ -81,22 +120,29 @@ function mapToJsonifyProperty(property: DotNetProperty): JsonifyProperty {
 <style>
     .box{
         display: flex;
-        justify-content: center;
-        align-items: space-evenly;
-        gap: 50px;
-        height: 100%;
+        align-items: center;
+        justify-content: space-evenly;
+        gap: 50px
+    }
+
+    .dataDisplay {
+        align-self: flex-start;
         width: 100%;
+        height: 100%;
+        flex-basis: auto;
     }
 
     .jsonDisplay {
+        width: 100%;
         align-self: flex-start;
+        flex-basis: auto;
     }
 </style>
 
 <template>
     <div v-if="propertyProvided">
         <div class="box">
-            <div>
+            <div class="dataDisplay">
                 <DataDisplay :jsonifyProperty="mappedProperty" />
             </div>
             <div class="jsonDisplay">
@@ -104,5 +150,4 @@ function mapToJsonifyProperty(property: DotNetProperty): JsonifyProperty {
             </div>
         </div>
     </div>
-    <div v-else>No data yet.</div>
 </template>

@@ -12,13 +12,14 @@ const props = defineProps<Props>()
 const computedColor = computed(() => {
 
 switch (props.jsonifyProperty.depth){
-    case 0: return '#F56C6C';
-    case 1: return '#f89898';
-    case 2: return '#fab6b6';
-    case 3: return '#fcd3d3';
-    case 4: return '#fde2e2';
-    case 5: return '#fef0f0';
-    default: return '#000000';
+    case 0: return '#4d908e';
+    case 1: return '#43aa8b';
+    case 2: return '#90be6d';
+    case 3: return '#FACD62';
+    case 4: return '#f8961e';
+    case 5: return '#f3722c';
+    case 6: return '#FB7E80';
+    default: return '#277da1';
     }
 })
 </script>
@@ -32,8 +33,15 @@ switch (props.jsonifyProperty.depth){
 }
 
 .text {
-  font-size: 14px;
-  color: black;
+  font-size: 18px;
+  color: #1f363d;
+}
+
+.propertyType {
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 800;
+    color: #F2F7EF;
 }
 </style>
 
@@ -43,6 +51,7 @@ switch (props.jsonifyProperty.depth){
             <template #header>
                 <div align="left" class="card-header">
                     <el-text class="text"><b>{{ props.jsonifyProperty.displayName }}</b></el-text>
+                    <el-text class="propertyType"> {{ props.jsonifyProperty.propertyType }}</el-text>
                     <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.List">
                         <el-input-number size="small" v-model="props.jsonifyProperty.arraySize" />
                     </div>
@@ -51,6 +60,7 @@ switch (props.jsonifyProperty.depth){
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.Boolean" align="left"> 
                 <el-switch 
                 v-model="props.jsonifyProperty.setValue"
+                style="--el-switch-on-color: #41F9F6; --el-switch-off-color: #f94144"
                 size="small"
                 active-text="True"
                 inactive-text="False"

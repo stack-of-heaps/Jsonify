@@ -28,11 +28,32 @@ function getDefaultValue(property: JsonifyProperty): any {
     else
         return property.setValue
 }
+
+function jsonifyProps(jsonifyProperty: JsonifyProperty): string {
+    return JSON.stringify(getDefaultValue(props.jsonifyProperty), null, 2) 
+}
+
+function copyToClipboard(){
+    let jsonString = jsonifyProps(props.jsonifyProperty)
+    navigator.clipboard.writeText(jsonString);
+}
+
 </script>
 
+<style>
+.jsonViewText{
+    color: #f8f8f2;
+}
+.preStyle {
+    color: #f8f8f2;
+    font-size: 24px;
+}
+</style>
+
 <template>
-    <div>
-        <p><h1>{{ props.jsonifyProperty.displayName }}</h1></p>
-        <pre>{{ JSON.stringify(getDefaultValue(props.jsonifyProperty), null, 2) }}</pre>
+    <div class="funDiv">
+        <el-button @click="copyToClipboard">Copy to Clipboard</el-button>
+        <p class="jsonViewText"><h1>{{ props.jsonifyProperty.displayName }}</h1></p>
+        <pre class="preStyle">{{ JSON.stringify(getDefaultValue(props.jsonifyProperty), null, 1) }}</pre>
     </div>
 </template>
