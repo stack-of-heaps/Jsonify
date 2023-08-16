@@ -13,6 +13,12 @@ interface Props {
 const props = defineProps<Props>()
 const mappedProperty = ref(mapToJsonifyProperty(props.property))
 
+// Some default values are set purposely to satisfy common
+// validation requirements.
+// For example, most areas where we feature ZipCode require
+// a specific format/length.
+// Another example: When we encounter Country, set to USA, as this
+// is by far the most used value across contexts and services.
 function getDefaultValue(property: DotNetProperty): any {
     switch(property.propertyType){
         case PropertyTypes.Boolean:
@@ -65,10 +71,6 @@ function getDefaultValue(property: DotNetProperty): any {
 
         case PropertyTypes.Object:
             {
-                if (property.displayName === "IndividualInterview"){
-                    return null;
-                }
-
                 let newObject: Record<string, any> = {}
                 property.properties.forEach(property => {
                     newObject[property.displayName] = getDefaultValue(property)
@@ -93,24 +95,46 @@ function getDefaultValue(property: DotNetProperty): any {
     }
 }
 
+// Maps a DotNetProperty to a JsonifyProperty.
+// The output of this function is passed to the display elements.
+// ArraySize, properties, collections, setValue are all subject to mutation.
+// This is against "general bad practices" but in our case the app 
+// is designed around mutating props.
+// ArraySize:   When this changes, JsonifyProperty.properties are copied into
+//              collections. This forms the new collection.
+// Collections: See note above.
+// Properties:  Indirectly mutated (arraySize, collections, setValue)
+// SetValue:    For everything other than Lists, this is the value which
+//              is displayed/modified.
+// We store a "backup" of SetValue in DefaultValue to support null functionality.
+// If you make a property null but want it back, we use the DefaultValue to restore.
 function mapToJsonifyProperty(property: DotNetProperty): JsonifyProperty {
     let mappedProperties = [] as JsonifyProperty[]
     if (property.properties){
         mappedProperties = property.properties.map(property => mapToJsonifyProperty(property))
     }
+
+    let defaultValue = getDefaultValue(property)
     
     let jsonifyProperty = {
-        displayName: property.displayName,
+        arraySize: 1,
+        defaultValue: defaultValue,
         depth: property.depth,
+        displayName: property.displayName,
         enumeratedProperties: property.enumeratedProperties ?? [],
         properties: mappedProperties,
         propertyType: property.propertyType,
-        setValue: getDefaultValue(property),
-        arraySize: 1
+        setValue: defaultValue
     } as JsonifyProperty
 
     if (property.propertyType === PropertyTypes.List){
-        jsonifyProperty.collections = { 1: mappedProperties };
+        let collections = { 1: mappedProperties };
+        jsonifyProperty.collections = collections;
+        jsonifyProperty.defaultValue = collections;
+    }
+    
+    if (property.propertyType === PropertyTypes.Object){
+        jsonifyProperty.defaultValue = jsonifyProperty.properties
     }
 
     return jsonifyProperty;

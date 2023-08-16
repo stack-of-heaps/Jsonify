@@ -14,14 +14,15 @@ export type DotNetProperty = {
 }
 
 export type JsonifyProperty = {
+    arraySize: number,
+    collections: Record<number, JsonifyProperty[]>,
+    defaultValue: any,
     displayName: string,
     depth: number,
     enumeratedProperties?: string[],
     properties: JsonifyProperty[],
     propertyType: PropertyTypes,
-    setValue: any,
-    collections: Record<number, JsonifyProperty[]>,
-    arraySize: number
+    setValue: any
 }
 
 export enum PropertyTypes {

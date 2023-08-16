@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import ListData from './ListData.vue'
 import { JsonifyProperty, PropertyTypes } from '../lib/typeDefinitions'
 import 'element-plus/es/components/message/style/css'
+import { Delete, MagicStick } from '@element-plus/icons-vue'
 
 interface Props {
     jsonifyProperty: JsonifyProperty
@@ -10,7 +11,6 @@ interface Props {
 
 const props = defineProps<Props>()
 const computedColor = computed(() => {
-
 switch (props.jsonifyProperty.depth){
     case 0: return '#4d908e';
     case 1: return '#43aa8b';
@@ -22,6 +22,30 @@ switch (props.jsonifyProperty.depth){
     default: return '#277da1';
     }
 })
+
+function setToDefault(){
+    if (props.jsonifyProperty.propertyType === PropertyTypes.List)
+        props.jsonifyProperty.collections = props.jsonifyProperty.defaultValue
+
+    else if (props.jsonifyProperty.propertyType === PropertyTypes.Object)
+        props.jsonifyProperty.properties = props.jsonifyProperty.defaultValue
+
+    else 
+        props.jsonifyProperty.setValue = props.jsonifyProperty.defaultValue;
+}
+
+function setToNull(){
+    if (props.jsonifyProperty.propertyType === PropertyTypes.List){
+        props.jsonifyProperty.collections = null!
+        props.jsonifyProperty.setValue = null
+    }
+
+    else if (props.jsonifyProperty.propertyType === PropertyTypes.Object)
+        props.jsonifyProperty.properties = null!
+
+    else 
+        props.jsonifyProperty.setValue = null;
+}
 </script>
 
 <style lang="scss">
@@ -35,6 +59,7 @@ switch (props.jsonifyProperty.depth){
 .text {
   font-size: 18px;
   color: #1f363d;
+  margin-right: 10px;
 }
 
 .propertyType {
@@ -43,14 +68,23 @@ switch (props.jsonifyProperty.depth){
     font-weight: 800;
     color: #F2F7EF;
 }
+
+.buttonGroup {
+    display: flex;
+    justify-content: space-between;
+}
 </style>
 
 <template>
     <div v-if="props.jsonifyProperty?.displayName">
         <el-card class="box-card" :style="{'background-color': computedColor}">
             <template #header>
-                <div align="left" class="card-header">
-                    <el-text class="text"><b>{{ props.jsonifyProperty.displayName }}</b></el-text>
+                <div class="card-header">
+                    <div>
+                        <el-text class="text"><b>{{ props.jsonifyProperty.displayName }}</b></el-text>
+                        <el-button :icon="MagicStick" color="black" circle @click="setToDefault"/>
+                        <el-button :icon="Delete" color="black" circle @click="setToNull"/>
+                    </div>
                     <el-text class="propertyType"> {{ props.jsonifyProperty.propertyType }}</el-text>
                     <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.List">
                         <el-input-number size="small" v-model="props.jsonifyProperty.arraySize" />
@@ -101,7 +135,12 @@ switch (props.jsonifyProperty.depth){
             </div>
 
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.String"> 
-                <el-input v-model="props.jsonifyProperty.setValue" placeholder="placeholder" size="small"/>
+                <el-input 
+                v-model="props.jsonifyProperty.setValue" 
+                placeholder="placeholder" 
+                size="small" 
+                clearable
+                @clear="setToNull" />
             </div>
         </el-card>
     </div>
