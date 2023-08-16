@@ -264,7 +264,7 @@ public class AssemblyInfoController : ControllerBase
 
     private PropertyTypes GetPropertyType(string property)
     {
-        if (property.Contains("Int"))
+        if (property.Contains("Int32"))
         {
             return PropertyTypes.Integer;
         }
