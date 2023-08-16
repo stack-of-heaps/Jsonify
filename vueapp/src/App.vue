@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { onMounted,  watch, ref } from 'vue';
 import DataMaster from '../src/components/DataMaster.vue';
-import { ClassInfo, Property, ProductNames, ServiceNames } from '../src/lib/typeDefinitions'
+import { ClassInfo, DotNetProperty, ProductNames, ServiceNames } from '../src/lib/typeDefinitions'
 
 const classLoaded = ref(false);
 const classList = ref<ClassInfo[]>([]);
@@ -48,7 +48,7 @@ const serviceList = ref<string[]>(['']);
 const selectedService = ref<ServiceNames>(ServiceNames.None);
 const selectedProduct = ref<ProductNames>(ProductNames.None)
 const selectedClass = ref<number | null>(null);
-const classProperties = ref<Property>({} as Property);
+const classProperties = ref<DotNetProperty>({} as DotNetProperty);
 
 onMounted(() => { fetchInitialData(); })
 watch(selectedClass, async (newSelection) => { getProperties(newSelection)});
@@ -87,18 +87,16 @@ async function serviceSelection(selectionValue: ServiceNames): Promise<void> {
     classList.value = await fetchClasses(selectionValue, selectedProduct.value);
 }
 
-async function getProperties(classListIndex: number | null): Promise<Property> {
+async function getProperties(classListIndex: number | null): Promise<DotNetProperty> {
     if (!classListIndex){
-        return {} as Property;
+        return {} as DotNetProperty;
     }
 
     classLoaded.value = false;
-
     let thisClass = classList.value[classListIndex];
     let namespace = thisClass.namespace
     let fullClassName = thisClass.fullName
     let classesBaseUrl = `https://localhost:7219/assemblyInfo/classes/${fullClassName}/properties?namespace=${namespace}`
-
     let response = await fetch(classesBaseUrl).then(response => response.json());
 
     classProperties.value = response;
@@ -126,7 +124,7 @@ async function fetchInitialData() {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;

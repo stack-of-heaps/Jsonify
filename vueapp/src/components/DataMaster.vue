@@ -1,29 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Property, JsonifyProperty, PropertyTypes } from '../lib/typeDefinitions'
+import { DotNetProperty, JsonifyProperty, PropertyTypes } from '../lib/typeDefinitions'
 import JsonView from './JsonView.vue'
 import DataDisplay from './DataDisplay.vue'
 import 'element-plus/es/components/message/style/css'
 
 interface Props {
-    property: Property,
+    property: DotNetProperty,
     propertyProvided: Boolean
 }
 
 const props = defineProps<Props>()
 const mappedProperty = ref(mapToJsonifyProperty(props.property))
 
-function getObject(properties: Property[]): Record<string, any> {
-    let newObject: Record<string, any> = {}
-    properties.forEach(property => {
-        newObject[property.displayName] = getDefaultValue(property)
-    })
-
-
-    return newObject
-}
-
-function getDefaultValue(property: Property): any {
+function getDefaultValue(property: DotNetProperty): any {
     switch(property.propertyType){
         case PropertyTypes.Boolean:
             return false;
@@ -35,6 +25,7 @@ function getDefaultValue(property: Property): any {
             return 0.0;
 
         case PropertyTypes.Enum:
+            // This should never happen. But just in case.
             if (!property.enumeratedProperties){
                 return null;
             }
@@ -45,55 +36,60 @@ function getDefaultValue(property: Property): any {
             return 0;
 
         case PropertyTypes.Object:
-            return getObject(property.properties)
+            {
+                let newObject: Record<string, any> = {}
+                property.properties.forEach(property => {
+                    newObject[property.displayName] = getDefaultValue(property)
+                })
+
+                return newObject
+            }
 
         case PropertyTypes.String:
-            return "abc";
+            return property.displayName;
 
         default:
             return "abc";
     }
 }
 
-function mapToJsonifyProperty(property: Property): JsonifyProperty {
+function mapToJsonifyProperty(property: DotNetProperty): JsonifyProperty {
    
-    let collections = {};
-    let properties = mapToJsonifyProperties(property.properties);
+    let mappedProperties = [] as JsonifyProperty[]
+    if (property.properties){
+        mappedProperties = property.properties.map(property => mapToJsonifyProperty(property))
+    }
+    
     let jsonifyProperty = {
         displayName: property.displayName,
         depth: property.depth,
         enumeratedProperties: property.enumeratedProperties ?? [],
-        properties: mapToJsonifyProperties(property.properties),
+        properties: mappedProperties,
         propertyType: property.propertyType,
         setValue: getDefaultValue(property),
         arraySize: 1
     } as JsonifyProperty
 
     if (property.propertyType === PropertyTypes.List){
-        collections = { 1: properties };
-        jsonifyProperty.collections = collections
-        jsonifyProperty.setValue = "shouldn't be seeing this";
+        jsonifyProperty.collections = { 1: mappedProperties };
     }
 
     return jsonifyProperty;
 }
-
-function mapToJsonifyProperties(properties: Property[]): JsonifyProperty[] | [] {
-    if (!properties){
-        return []
-    }
-
-    return properties.map(property => mapToJsonifyProperty(property))
-}
-
 </script>
 
 <style>
     .box{
         display: flex;
-        align-items: center;
-        justify-content: space-evenly;
-        gap: 50px
+        justify-content: center;
+        align-items: space-evenly;
+        gap: 50px;
+        height: 100%;
+        width: 100%;
+    }
+
+    .jsonDisplay {
+        align-self: flex-start;
     }
 </style>
 
@@ -101,9 +97,9 @@ function mapToJsonifyProperties(properties: Property[]): JsonifyProperty[] | [] 
     <div v-if="propertyProvided">
         <div class="box">
             <div>
-                <DataDisplay :classData="mappedProperty" />
+                <DataDisplay :jsonifyProperty="mappedProperty" />
             </div>
-            <div>
+            <div class="jsonDisplay">
                 <JsonView :jsonify-property="mappedProperty" />
             </div>
         </div>

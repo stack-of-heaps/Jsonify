@@ -5,11 +5,11 @@ export type ClassInfo = {
     product: string
 }
 
-export type Property = {
+export type DotNetProperty = {
     displayName: string,
     depth: number,
     enumeratedProperties: string[] | null,
-    properties: Property[],
+    properties: DotNetProperty[],
     propertyType: PropertyTypes
 }
 
