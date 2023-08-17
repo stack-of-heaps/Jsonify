@@ -35,27 +35,29 @@ function getDefaultValue(property: DotNetProperty): any {
         // For Country, set default value to USA.
         // For State, set default value to NE.
         case PropertyTypes.Enum:
-            // This should never happen. But just in case.
-            if (!property.enumeratedProperties){
-                return null;
-            }
+            {
+                // This should never happen. But just in case.
+                if (!property.enumeratedProperties){
+                    return null;
+                }
 
-            let usaIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "USA");
-            if (usaIndex !== -1){
-                return property.enumeratedProperties[usaIndex]
-            }
+                let usaIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "USA");
+                if (usaIndex !== -1){
+                    return property.enumeratedProperties[usaIndex]
+                }
 
-            let neIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "NE");
-            if (neIndex !== -1){
-                return property.enumeratedProperties[neIndex]
-            }
+                let neIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "NE");
+                if (neIndex !== -1){
+                    return property.enumeratedProperties[neIndex]
+                }
 
-            let purposeOfInsuranceIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "PurposeOfInsurance")
-            if (purposeOfInsuranceIndex !== -1){
-                return property.enumeratedProperties[purposeOfInsuranceIndex]
-            }
+                let purposeOfInsuranceIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "PurposeOfInsurance")
+                if (purposeOfInsuranceIndex !== -1){
+                    return property.enumeratedProperties[purposeOfInsuranceIndex]
+                }
 
-            return property.enumeratedProperties[0]
+                return property.enumeratedProperties[0]
+            }
 
         case PropertyTypes.Integer:
             switch (property.displayName){
