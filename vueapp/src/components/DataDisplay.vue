@@ -87,7 +87,7 @@ function setToNull(){
                     </div>
                     <el-text class="propertyType"> {{ props.jsonifyProperty.propertyType }}</el-text>
                     <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.List">
-                        <el-input-number size="small" v-model="props.jsonifyProperty.arraySize" />
+                        <el-input-number  v-model="props.jsonifyProperty.arraySize" />
                     </div>
                 </div>
             </template>
@@ -95,7 +95,7 @@ function setToNull(){
                 <el-switch 
                 v-model="props.jsonifyProperty.setValue"
                 style="--el-switch-on-color: #41F9F6; --el-switch-off-color: #f94144"
-                size="small"
+                
                 active-text="True"
                 inactive-text="False"
                 />
@@ -110,18 +110,18 @@ function setToNull(){
                 </div>
             </div>
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.Decimal"> 
-                    <el-input v-model="props.jsonifyProperty.setValue" size="small" />
+                    <el-input v-model="props.jsonifyProperty.setValue"  />
             </div>
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.Enum" align="left"> 
-                <el-select v-model="props.jsonifyProperty.setValue" filterable clearable class="m-2" placeholder="Choose One" size="small">
-                <el-option v-for="(enumValue, index) in props.jsonifyProperty.enumeratedProperties" size="small"
+                <el-select v-model="props.jsonifyProperty.setValue" filterable clearable class="m-2" placeholder="Choose One" >
+                <el-option v-for="(enumValue, index) in props.jsonifyProperty.enumeratedProperties" 
                             :key="index"
                             :label="enumValue"
                             :value="enumValue" />
                 </el-select> 
             </div>
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.Integer"> 
-                <el-input v-model="props.jsonifyProperty.setValue" size="small" />
+                <el-input v-model="props.jsonifyProperty.setValue"  />
             </div>
 
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.List">
@@ -138,7 +138,7 @@ function setToNull(){
                 <el-input 
                 v-model="props.jsonifyProperty.setValue" 
                 placeholder="placeholder" 
-                size="small" 
+                 
                 clearable
                 @clear="setToNull" />
             </div>
