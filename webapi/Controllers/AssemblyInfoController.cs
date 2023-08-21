@@ -59,7 +59,9 @@ public class AssemblyInfoController : ControllerBase
                 $"Both {nameof(ServiceNames)} and {nameof(ProductNames)} cannot be null.");
         }
 
-        return Ok(GetGetClassesResponse(serviceName, productName));
+        var classes = GetClassInfo(serviceName, productName).ToList();
+
+        return Ok(new GetClassesResponse { Classes = classes });
     }
 
     [EnableCors]
@@ -157,28 +159,25 @@ public class AssemblyInfoController : ControllerBase
         return property;
     }
 
-    private GetClassesResponse GetGetClassesResponse(ServiceNames? serviceName, ProductNames? productName)
+    private IEnumerable<Assembly> GetAssemblies(ServiceNames? serviceName, ProductNames? productName)
     {
-        var assemblies = new List<Assembly>();
-
         if (!serviceName.HasValue)
         {
             foreach (var service in Enum.GetValues<ServiceNames>())
             {
-                assemblies.Add(Assembly.Load(ServiceToNamespaceLookup.GetValueOrDefault(service)));
+                yield return Assembly.Load(ServiceToNamespaceLookup.GetValueOrDefault(service));
             };
         }
         else
         {
-            assemblies.Add(Assembly.Load(ServiceToNamespaceLookup.GetValueOrDefault(serviceName.Value)));
+            yield return Assembly.Load(ServiceToNamespaceLookup.GetValueOrDefault(serviceName.Value));
         }
-
-        return new GetClassesResponse { Classes = GetClassInfo(assemblies, serviceName, productName).ToList() };
     }
 
-    private IEnumerable<ClassInfo> GetClassInfo(List<Assembly> assemblies, ServiceNames? serviceName, ProductNames? productName)
+    private IEnumerable<ClassInfo> GetClassInfo(ServiceNames? serviceName, ProductNames? productName)
     {
         var productSearchFilter = GetProductSearchFilters(productName);
+        var assemblies = GetAssemblies(serviceName, productName);
 
         foreach (var assembly in assemblies)
         {
