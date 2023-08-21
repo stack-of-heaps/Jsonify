@@ -11,28 +11,28 @@ using webapi.DTOs;
 public class AssemblyInfoController : ControllerBase
 {
     private Dictionary<ServiceNames, string> ServiceToNamespaceLookup => new Dictionary<ServiceNames, string>
-        {
-            { ServiceNames.Api, "Assurity.Api.Contracts" },
-            { ServiceNames.Forms, "Assurity.Forms.Populate.Contracts" },
-            { ServiceNames.NBFrameworkRestAPI, "Assurity.NBFrameworkRestAPI.Contracts" },
-            { ServiceNames.Occupation, "Assurity.Occupation.Contracts" },
-            { ServiceNames.Questions, "Assurity.Questions.Contracts" },
-            { ServiceNames.Quote, "Assurity.Quote.Contracts" },
-            { ServiceNames.Underwriting, "Assurity.Underwriting.Contracts" }
-        };
+    {
+        { ServiceNames.Api, "Assurity.Api.Contracts" },
+        { ServiceNames.Forms, "Assurity.Forms.Populate.Contracts" },
+        { ServiceNames.NBFrameworkRestAPI, "Assurity.NBFrameworkRestAPI.Contracts" },
+        { ServiceNames.Occupation, "Assurity.Occupation.Contracts" },
+        { ServiceNames.Questions, "Assurity.Questions.Contracts" },
+        { ServiceNames.Quote, "Assurity.Quote.Contracts" },
+        { ServiceNames.Underwriting, "Assurity.Underwriting.Contracts" }
+    };
 
     private Dictionary<ProductNames, List<string>> ProductNamesSearchTermsLookup => new Dictionary<ProductNames, List<string>>
-        {
-            { ProductNames.AccidentGoToMarket, new List<string> { "GoToMarket" } },
-            { ProductNames.AccidentFlex, new List <string> { "Flex" } },
-            { ProductNames.AccidentalDeath, new List<string>{ "AccidentalDeath" } },
-            { ProductNames.CenturyPlusDisabilityIncome, new List<string>{ "CenturyPlusDisabilityIncome" } },
-            { ProductNames.CriticalIllness, new List<string>{ "CriticalIllness" } },
-            { ProductNames.CriticalIllnessDirect, new List < string > { "CriticalIllnessDirect" } },
-            { ProductNames.IncomeProtection, new List < string > { "IncomeProtection" } },
-            { ProductNames.TermLife, new List < string > { "TermLife" } },
-            { ProductNames.TermLifeDeveloperEdition, new List<string>{ "TermLifeLowStrain", "TermLifeDeveloperEdition" } }
-        };
+    {
+        { ProductNames.AccidentGoToMarket, new List<string> { "GoToMarket" } },
+        { ProductNames.AccidentFlex, new List <string> { "Flex" } },
+        { ProductNames.AccidentalDeath, new List<string>{ "AccidentalDeath" } },
+        { ProductNames.CenturyPlusDisabilityIncome, new List<string>{ "CenturyPlusDisabilityIncome" } },
+        { ProductNames.CriticalIllness, new List<string>{ "CriticalIllness" } },
+        { ProductNames.CriticalIllnessDirect, new List < string > { "CriticalIllnessDirect" } },
+        { ProductNames.IncomeProtection, new List < string > { "IncomeProtection" } },
+        { ProductNames.TermLife, new List < string > { "TermLife" } },
+        { ProductNames.TermLifeDeveloperEdition, new List<string>{ "TermLifeLowStrain", "TermLifeDeveloperEdition" } }
+    };
 
     [EnableCors]
     [HttpGet("products", Name = "Products")]
