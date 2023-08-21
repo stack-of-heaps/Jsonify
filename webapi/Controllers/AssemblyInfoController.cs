@@ -181,8 +181,6 @@ public class AssemblyInfoController : ControllerBase
 
         foreach (var assembly in assemblies)
         {
-            var assemblyFilter = GetAssemblyFilter(serviceName);
-
             foreach (var type in assembly.GetTypes())
             {
                 if (productSearchFilter.Any() && !productSearchFilter.Any(filter => type.FullName.Contains(filter, StringComparison.OrdinalIgnoreCase)))
@@ -221,44 +219,6 @@ public class AssemblyInfoController : ControllerBase
         }
 
         return productSearchFilter;
-    }
-
-    private List<string> GetAssemblyFilter(ServiceNames? serviceName)
-    {
-        if (!serviceName.HasValue)
-        {
-            return new List<string>();
-        }
-
-        var assemblyFilters = new List<string> { ServiceToNamespaceLookup[serviceName.Value] };
-        switch (serviceName)
-        {
-            case ServiceNames.Api:
-            case ServiceNames.Occupation:
-                break;
-
-            case ServiceNames.Forms:
-                assemblyFilters.Add("Assurity.Forms.V2.Populate.Contracts");
-                break;
-
-            case ServiceNames.NBFrameworkRestAPI:
-                assemblyFilters.Add("Assurity.NBFrameworkRestApi.V2.Contracts");
-                break;
-
-            case ServiceNames.Questions:
-                assemblyFilters.Add("Assurity.Questions.V2.Contracts");
-                break;
-
-            case ServiceNames.Quote:
-                assemblyFilters.Add("Assurity.Quote.V3.Contracts");
-                break;
-
-            case ServiceNames.Underwriting:
-                assemblyFilters.Add("Assurity.Underwriting.V2.Contracts");
-                break;
-        }
-
-        return assemblyFilters;
     }
 
     private PropertyTypes GetPropertyType(string property)
