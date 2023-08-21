@@ -1,4 +1,4 @@
-﻿namespace webapi.DTOs
+﻿namespace webapi.Managers.Contracts
 {
     public class GetClassesResponse
     {

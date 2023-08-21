@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using webapi.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddCors(options =>
                 policy.WithOrigins("https://localhost:5002");
             });
 });
+
+builder.Services.AddManagerDependencies();
 
 var app = builder.Build();
 
