@@ -59,7 +59,7 @@ function copyToClipboard(){
 <template>
     <div class="funDiv">
         <el-button @click="copyToClipboard">Copy to Clipboard</el-button>
-        <p class="jsonViewText"><h1>{{ props.jsonifyProperty.displayName }}</h1></p>
+        <p class="jsonViewText"><strong>{{ props.jsonifyProperty.displayName }}</strong></p>
         <pre class="preStyle">{{ jsonifyProps(props.jsonifyProperty) }}</pre>
     </div>
 </template>
