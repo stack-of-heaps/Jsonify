@@ -1,3 +1,4 @@
+// Used to populate dropdown boxes.
 export type ClassInfo = {
     displayName: string,
     fullName: string,
@@ -5,6 +6,7 @@ export type ClassInfo = {
     product: string
 }
 
+// Payload from .NET Service.
 export type DotNetProperty = {
     displayName: string,
     depth: number,
@@ -13,6 +15,7 @@ export type DotNetProperty = {
     propertyType: PropertyTypes
 }
 
+// Derived from DotNetProperty.
 export type JsonifyProperty = {
     arraySize: number,
     collections: Record<number, JsonifyProperty[]>,
