@@ -1,13 +1,3 @@
-<template>
-    <div>
-        <div v-for="(jsonifyPropertyArray, index) in props.jsonifyProperty.collections" :key="index">
-            <div v-for="(jsonifyProperty, index) in jsonifyPropertyArray" :key="'jsonProp' + index">
-                <DataDisplay :jsonifyProperty="jsonifyProperty"/>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script setup lang="ts">
 import {watch} from 'vue'
 import { JsonifyProperty } from '../lib/typeDefinitions'
@@ -32,3 +22,13 @@ watch(() => props.jsonifyProperty.arraySize, (newValue: number, oldValue: number
 })
 
 </script>
+
+<template>
+    <div>
+        <div v-for="(jsonifyPropertyArray, index) in props.jsonifyProperty.collections" :key="index">
+            <div v-for="(jsonifyProperty, index) in jsonifyPropertyArray" :key="'jsonProp' + index">
+                <DataDisplay :jsonifyProperty="jsonifyProperty"/>
+            </div>
+        </div>
+    </div>
+</template>
