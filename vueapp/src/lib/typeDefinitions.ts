@@ -28,6 +28,7 @@ export type JsonifyProperty = {
     setValue: any
 }
 
+// Needs to correspond with .NET Solution PropertyTypes.
 export enum PropertyTypes {
     Boolean = "Boolean",
     DateTime = "DateTime",
