@@ -47,7 +47,9 @@
     "parserOptions": {
       "parser": "@typescript-eslint/parser"
     },
-    "rules": {}
+    "rules": {
+      "vue/no-mutating-props": "off"
+    }
   },
   "browserslist": [
     "> 1%",
