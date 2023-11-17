@@ -22,9 +22,9 @@ const mappedProperty = ref(mapToJsonifyProperty(props.property))
 function getDefaultValue(property: DotNetProperty): any {
     switch(property.propertyType){
         case PropertyTypes.Boolean:
-            if (property.displayName === "IsCitizen")
-                return true;
-            return false;
+            return property.displayName === "IsCitizen" 
+                ? true
+                : false;
 
         case PropertyTypes.DateTime:
             return new Date().toISOString();
@@ -51,9 +51,9 @@ function getDefaultValue(property: DotNetProperty): any {
                     return property.enumeratedProperties[neIndex]
                 }
 
-                let purposeOfInsuranceIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "PurposeOfInsurance")
-                if (purposeOfInsuranceIndex !== -1){
-                    return property.enumeratedProperties[purposeOfInsuranceIndex]
+                let relationshipToPrimaryInsuredIndex = property.enumeratedProperties.findIndex(enumVal => enumVal === "Estate")
+                if (relationshipToPrimaryInsuredIndex !== -1){
+                    return property.enumeratedProperties[relationshipToPrimaryInsuredIndex]
                 }
 
                 return property.enumeratedProperties[0]
@@ -153,7 +153,7 @@ function mapToJsonifyProperty(property: DotNetProperty): JsonifyProperty {
 
     .dataDisplay {
         align-self: flex-start;
-        width: 100%;
+        width: 70%;
         height: 100%;
         flex-basis: auto;
     }

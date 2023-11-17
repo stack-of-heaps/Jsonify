@@ -57,16 +57,17 @@ function setToNull(){
 }
 
 .text {
-  font-size: 18px;
+  font-size: 12px;
   color: #1f363d;
   margin-right: 10px;
 }
 
 .propertyType {
-    font-size: 16px;
+    font-size: 12px;
     font-style: italic;
     font-weight: 800;
     color: #F2F7EF;
+    text-shadow: 2px 2px 4px black;
 }
 
 .buttonGroup {
@@ -77,7 +78,7 @@ function setToNull(){
 
 <template>
     <div v-if="props.jsonifyProperty?.displayName">
-        <el-card class="box-card" :style="{'background-color': computedColor}">
+        <el-card class="box-card" :style="{'background-color': computedColor, 'padding': '0px'}">
             <template #header>
                 <div class="card-header">
                     <div>
@@ -87,30 +88,28 @@ function setToNull(){
                     </div>
                     <el-text class="propertyType"> {{ props.jsonifyProperty.propertyType }}</el-text>
                     <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.List">
-                        <el-input-number  v-model="props.jsonifyProperty.arraySize" />
+                        <el-input-number size="small" :min=0 v-model="props.jsonifyProperty.arraySize" />
                     </div>
                 </div>
             </template>
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.Boolean" align="left"> 
                 <el-switch 
-                v-model="props.jsonifyProperty.setValue"
-                style="--el-switch-on-color: #41F9F6; --el-switch-off-color: #f94144"
-                
-                active-text="True"
-                inactive-text="False"
-                />
+                    v-model="props.jsonifyProperty.setValue"
+                    style="--el-switch-on-color: #41F9F6;
+                    --el-switch-off-color: #f94144"
+                    active-text="True"
+                    inactive-text="False" />
             </div>
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.DateTime" align="left"> 
                 <div class="block">
                     <el-date-picker
                         v-model="props.jsonifyProperty.setValue"
                         type="datetime"
-                        placeholder="Select date and time"
-                    />
+                        placeholder="Select date and time" />
                 </div>
             </div>
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.Decimal"> 
-                    <el-input v-model="props.jsonifyProperty.setValue"  />
+                    <el-input size="small" v-model="props.jsonifyProperty.setValue"  />
             </div>
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.Enum" align="left"> 
                 <el-select v-model="props.jsonifyProperty.setValue" filterable clearable class="m-2" placeholder="Choose One" >
@@ -121,7 +120,7 @@ function setToNull(){
                 </el-select> 
             </div>
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.Integer"> 
-                <el-input v-model="props.jsonifyProperty.setValue"  />
+                <el-input size="small" v-model="props.jsonifyProperty.setValue"  />
             </div>
 
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.List">
@@ -136,11 +135,11 @@ function setToNull(){
 
             <div v-if="props.jsonifyProperty.propertyType === PropertyTypes.String"> 
                 <el-input 
-                v-model="props.jsonifyProperty.setValue" 
-                placeholder="placeholder" 
-                 
-                clearable
-                @clear="setToNull" />
+                    size="small"
+                    v-model="props.jsonifyProperty.setValue" 
+                    placeholder="placeholder" 
+                    clearable
+                    @clear="setToNull" />
             </div>
         </el-card>
     </div>

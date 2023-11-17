@@ -50,16 +50,14 @@ function copyToClipboard(){
 .jsonViewText{
     color: #f8f8f2;
 }
-.preStyle {
+pre {
     color: #f8f8f2;
-    font-size: 24px;
+    font-size: 14px;
 }
 </style>
 
 <template>
-    <div class="funDiv">
-        <el-button @click="copyToClipboard">Copy to Clipboard</el-button>
-        <p class="jsonViewText"><strong>{{ props.jsonifyProperty.displayName }}</strong></p>
-        <pre class="preStyle">{{ jsonifyProps(props.jsonifyProperty) }}</pre>
-    </div>
+    <el-button size="small" @click="copyToClipboard">Copy to Clipboard</el-button>
+    <p class="jsonViewText"><strong>{{ props.jsonifyProperty.displayName }}</strong></p>
+    <pre>{{ jsonifyProps(props.jsonifyProperty) }}</pre>
 </template>
